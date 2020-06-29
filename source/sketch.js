@@ -1,26 +1,16 @@
-var boardSize = 800
-
-var pieces = [];
-var images = [];
-
-function preload() {
-	for(1 = 0; i < 2; i++){
-		for(j = 1; j < 7; j++){
-			images.push(loadImage( "sprites/"+ i + j +'.png'));
-		}
-	}
-}
+var boardSize = 800;
+var imgs = []
 
 function setup() {
 	createCanvas(boardSize, boardSize );
-	
+	var game1 = new game(boardSize, 0, 0);
+	game1.init();
 }
 
 function draw() {
 	background(255);
-}
-
-// Function just for drawing the board
-function drawBoard() {
-	
+	//game1.draw();
+	//game1.test1();
+	fill("Black");
+	rect(0,0,50,50);
 }
