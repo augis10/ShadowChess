@@ -1,8 +1,9 @@
 
 
-function game(size, x, y){
+function game(size, x, y, type){
 	this.x = x;
 	this.y = y;
+	this.type = type; //player type 1-white, 2-black or 0-both
 	this.boardSize = size;
 	this.sqSize = boardSize/8;
 	this.imgs = [];
@@ -11,11 +12,15 @@ function game(size, x, y){
 	this.initRow1 = [2,4,3,1,0,3,4,2];
 	this.initRow2 = [8,10,9,7,6,9,10,8];
 	this.board = [];
+	this.toMove = (type == 1);
+	
+	
 	
 	function square(){
 		this.figure = null;
 		this.highlight = false;
-		this.visable = false;
+		this.visable = true;
+		this.movedOnce = false;
 	}
 	
 	this.createBoardArr = function(){
@@ -28,8 +33,6 @@ function game(size, x, y){
 			}
 		}
 	}
-	
-	
 	
 	this.loadImages = function() {
 		for(var i = 0; i < 2; i++){
@@ -64,7 +67,7 @@ function game(size, x, y){
 					black = false;
 				}
 				else {
-					fill(255, 255, 204);
+					fill(255, 212, 128);
 					black = true;
 				}
 				
@@ -72,17 +75,46 @@ function game(size, x, y){
 			}
 		}
 	}
-	this.drawFigures = function(player){
+	
+	this.drawFigure = function(player, row, col){
+		if(player == 0 ){
+			image(this.imgs[this.board[row][col].figure], this.x + col * this.sqSize, this.y + (row) *this.sqSize, this.sqSize, this.sqSize);
+		}
+		if(player == 1 && this.board[row][col].visable){
+			image(this.imgs[this.board[row][col].figure], this.x + col * this.sqSize, this.y + (row) *this.sqSize, this.sqSize, this.sqSize);
+		}
+		if(player == 2 && this.board[row][col].visable){
+			image(this.imgs[this.board[row][col].figure], this.x + (7-col) * this.sqSize, this.y + (7-row) *this.sqSize, this.sqSize, this.sqSize);
+		}
+	}
+	
+	this.drawAllFigures = function(player){
 		for(var row = 0; row < 8; row++){
 			for(var col = 0; col < 8; col++){
 				if(this.board[row][col].figure != null){
-					if(player == "white"){
-						image(this.imgs[this.board[row][col].figure], this.x + col * this.sqSize, this.y + (7-row) *this.sqSize, this.sqSize, this.sqSize);
-					}
+					this.drawFigure(player, row, col)
 				}	
 			}
 		}
 	}
+	
+	this.checkSquare = function(Row, Col){
+		if(Row >= 0 && Row <= 7 && Col >=0  && Col <= 7){
+			return True;
+		}
+		return false;
+	}
+
+	
+	
+	
+	this.figureMove = function(player, oldRow, oldCol, newRow, newCol){
+		if(toMove == player && checkSquare(oldRow, oldCol) && checkSquare(newRow, newCol)){
+			
+		}
+	}
+	
+	
 	this.init = function(){
 		this.createBoardArr();
 		this.loadImages();
@@ -91,7 +123,7 @@ function game(size, x, y){
 	
 	this.draw = function(){
 		this.drawBoard();
-		this.drawFigures('white');
+		this.drawAllFigures(this.type);
 	}
 	
 	
