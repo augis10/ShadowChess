@@ -1,4 +1,4 @@
-var boardSize = 600;
+var boardSize = 800;
 var imgs = []
 var game1;
 

@@ -64,7 +64,7 @@ function game(size, x, y){
 					black = false;
 				}
 				else {
-					fill("White");
+					fill(255, 255, 204);
 					black = true;
 				}
 				
