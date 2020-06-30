@@ -34,7 +34,7 @@ function game(size, x, y){
 	this.loadImages = function() {
 		for(var i = 0; i < 2; i++){
 			for(var j = 1; j < 7; j++){
-				var img = loadImage( "https://karklas.mif.vu.lt/~aubr5652/sprites/"+ String(i) + String(j) +".png")
+				var img = loadImage( "../sprites/"+ String(i) + String(j) +".png")
 				this.imgs.push(img);
 			}
 		}
@@ -48,33 +48,30 @@ function game(size, x, y){
 			this.board[6][i].figure = 11;
 		}
 	}
-	/*
-	this.test1 = function(){
-		//fill('Black');
-		//rect(100,100,100,100);
-		row = 5;
-		col = 3;
-		image(this.imgs[this.board[row][col].figure], this.x + col * this.sqSize, this.y + (7-row) *this.sqSize, this.sqSize, this.sqSize)
-	}
-	*/
 	
 	this.drawBoard = function(){
-		var black = false;
+		var black = true;
 		for(var row = 0; row < 8; row++){
+			if(black){
+				black = false;
+			}
+			else {
+				black = true;
+			}
 			for(var col = 0; col < 8; col++){
 				if(black){
-					fill("Black");
+					fill(153, 51, 0);
 					black = false;
 				}
 				else {
 					fill("White");
 					black = true;
 				}
+				
 				rect(this.x + col * this.sqSize, this.y + row * this.sqSize, this.sqSize, this.sqSize);
 			}
 		}
 	}
-	/*
 	this.drawFigures = function(player){
 		for(var row = 0; row < 8; row++){
 			for(var col = 0; col < 8; col++){
@@ -86,7 +83,6 @@ function game(size, x, y){
 			}
 		}
 	}
-	*/
 	this.init = function(){
 		this.createBoardArr();
 		this.loadImages();
@@ -94,8 +90,8 @@ function game(size, x, y){
 	}
 	
 	this.draw = function(){
-		//this.drawBoard();
-		//this.drawFigures('white');
+		this.drawBoard();
+		this.drawFigures('white');
 	}
 	
 	
