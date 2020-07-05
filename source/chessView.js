@@ -52,15 +52,26 @@ class chessView{
 			image(this.figureImgs[figure], this.x + (7-col) * this.sqSize, this.y + (7-row) *this.sqSize, this.sqSize, this.sqSize);
 		}
     }
+
+    drawFogOfWar = function(visable, player, row, col){
+        fill(165,164,167);
+        if(player == 1 && !visable){
+			rect(this.x + col * this.sqSize, this.y + (row) *this.sqSize, this.sqSize, this.sqSize);
+		}
+		if(player == 2 && !visable){
+			rect(this.x + (7-col) * this.sqSize, this.y + (7-row) *this.sqSize, this.sqSize, this.sqSize);
+		}
+    }
     
     drawAllFigures = function(board, player){
 		for(var row = 0; row < 8; row++){
 			for(var col = 0; col < 8; col++){
+                var vis = board[row][col].visable;
 				if(board[row][col].figure != null){
                     var fig = board[row][col].figure;
-                    var vis = board[row][col].visable;
 					this.drawFigure(fig, vis, player, row, col);
-				}	
+                }
+                this.drawFogOfWar(vis, player, row, col);	
 			}
 		}
     }
