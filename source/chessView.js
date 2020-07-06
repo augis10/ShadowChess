@@ -1,8 +1,9 @@
 class chessView{
     figureImgs = [];
-    constructor(boardSize, x, y){
+    constructor(player, boardSize, x, y){
         this.x = x;
         this.y = y;
+        this.player = player;
         this.boardSize = boardSize;
         this.sqSize = boardSize/8;
         this.loadImages();
@@ -35,50 +36,59 @@ class chessView{
 					fill(255, 212, 128);
 					black = true;
 				}
-				
 				rect(this.x + col * this.sqSize, this.y + row * this.sqSize, this.sqSize, this.sqSize);
 			}
 		}
     }
     
-    drawFigure = function(figure, visable, player, row, col){
-		if(player == 0 ){
+    drawFigure = function(figure, visable, row, col){
+		if(this.player == 1 && visable){
 			image(this.figureImgs[figure], this.x + col * this.sqSize, this.y + (row) *this.sqSize, this.sqSize, this.sqSize);
 		}
-		if(player == 1 && visable){
-			image(this.figureImgs[figure], this.x + col * this.sqSize, this.y + (row) *this.sqSize, this.sqSize, this.sqSize);
-		}
-		if(player == 2 && visable){
+		if(this.player == 2 && visable){
 			image(this.figureImgs[figure], this.x + (7-col) * this.sqSize, this.y + (7-row) *this.sqSize, this.sqSize, this.sqSize);
 		}
     }
 
-    drawFogOfWar = function(visable, player, row, col){
+    drawFogOfWar = function(visable, row, col){
         fill(165,164,167);
-        if(player == 1 && !visable){
+        if(this.player == 1 && !visable){
 			rect(this.x + col * this.sqSize, this.y + (row) *this.sqSize, this.sqSize, this.sqSize);
 		}
-		if(player == 2 && !visable){
+		if(this.player == 2 && !visable){
+			rect(this.x + (7-col) * this.sqSize, this.y + (7-row) *this.sqSize, this.sqSize, this.sqSize);
+		}
+    }
+
+    drawMovable = function(movable, selected, row, col){
+        fill(51, 204, 51);
+        if(this.player == 1 && (selected  || movable)){
+			rect(this.x + col * this.sqSize, this.y + (row) *this.sqSize, this.sqSize, this.sqSize);
+		}
+		if(this.player == 2 && (selected  || movable)){
 			rect(this.x + (7-col) * this.sqSize, this.y + (7-row) *this.sqSize, this.sqSize, this.sqSize);
 		}
     }
     
-    drawAllFigures = function(board, player){
+    drawSquares = function(board){
 		for(var row = 0; row < 8; row++){
 			for(var col = 0; col < 8; col++){
                 var vis = board[row][col].visable;
+                var mov = board[row][col].movable;
+                var sel = board[row][col].selected;
+                this.drawMovable(mov, sel, row, col);
 				if(board[row][col].figure != null){
                     var fig = board[row][col].figure;
-					this.drawFigure(fig, vis, player, row, col);
+					this.drawFigure(fig, vis, row, col);
                 }
-                this.drawFogOfWar(vis, player, row, col);	
+                this.drawFogOfWar(vis, row, col);	
 			}
 		}
     }
     
-    draw = function(board, player){
+    draw = function(board){
         this.drawBoard();
-        this.drawAllFigures(board, player);
+        this.drawSquares(board);
     }
 
 }

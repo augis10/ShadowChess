@@ -1,10 +1,10 @@
 
 class chessGame{
-    board = [];
+    board = []; // This board has limitet information
     constructor(player, size, startX, startY){
-        this.player = player; // //player type 1-white, 2-black or 0-both (test)
+        this.player = player; // //player type 1-white, 2-black
         this.createBoard();
-        this.view = new chessView(size, startX, startY);
+        this.view = new chessView(player, size, startX, startY);
         this.logic = new chessLogic(this.board, this.player);
     }
 
@@ -18,8 +18,16 @@ class chessGame{
 			}
 		}
     }
+
+    select = function(row, col){
+        // changes the board (has limited information)
+    }
+
+    move = function(row, col, rowN, colN){
+        // changes the board (has limited information)
+    }
     
     draw = function(){
-        this.view.draw(this.board, this.player);
+        this.view.draw(this.board);
     }
 }

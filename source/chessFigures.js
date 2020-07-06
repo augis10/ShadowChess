@@ -61,27 +61,27 @@ class rook extends figure {
     left = [[0,-1],[0,-2],[0,-3],[0,-4],[0,-5],[0,-6],[0,-7]];
 }
 class knight extends figure {
-    moves = [[1,2],[2,1],[2,-1],[1,-2],[-1,2],[-2,1],[-2,-1],[-1,-2]];
+    mov = [[1,2],[2,1],[2,-1],[1,-2],[-1,2],[-2,1],[-2,-1],[-1,-2]];
     static visable = [];
     static movable = [];
-    
+
     static knightCtr(board, row, col){
         this.visable = [];
         this.movable = [];
         if(board[row][col].figure == 4 ){
-            for(i = 0; i < moves.length; i++){
-                r = row + mov[i][0];
-                c = col + mov[i][1];
+            for(i = 0; i < this.mov.length; i++){
+                r = row + this.mov[i][0];
+                c = col + this.mov[i][1];
                 if(this.checkSquare(r,c)){
-                    visable.push([r,c]);
+                    this.visable.push([r,c]);
                     switch(this.isEnemy(board, row, col, r, c)) {
                         case 1: // friend
                             break;
                         case 2: // enemy
-                            movable.push([r,c]);
+                            this.movable.push([r,c]);
                             break;
                         case 0: // empty
-                            movable.push([r,c]);
+                            this.movable.push([r,c]);
                             break;
                     }
                 }    
