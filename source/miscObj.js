@@ -1,12 +1,12 @@
-class square{
+class Square{
     figure = null;
     selected = false;
     movable = false;
 	visable = true;
-	//movedOnce = false;
 }
 
-class squareExt extends square{
+class SquareExt extends Square{
     blackVisable = true;
     whiteVisable = true;
+    movedOnce = false;
 }

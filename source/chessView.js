@@ -1,4 +1,4 @@
-class chessView{
+class ChessView{
     figureImgs = [];
     constructor(player, boardSize, x, y){
         this.x = x;

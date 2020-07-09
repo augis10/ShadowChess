@@ -1,4 +1,4 @@
-class chessLogic{
+class ChessLogic{
     initRow1 = [2,4,3,1,0,3,4,2];
     initRow2 = [8,10,9,7,6,9,10,8];
     boardFull = [];
@@ -15,7 +15,7 @@ class chessLogic{
 		}
 		for(var row = 0; row < 8; row++) {
 			for(var col = 0; col < 8; col++) {
-				this.boardFull[row][col] = new squareExt();
+				this.boardFull[row][col] = new SquareExt();
 			}
 		}
     }

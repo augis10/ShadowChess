@@ -1,11 +1,11 @@
 
-class chessGame{
+class ChessGame{
     board = []; // This board has limitet information
     constructor(player, size, startX, startY){
         this.player = player; // //player type 1-white, 2-black
         this.createBoard();
-        this.view = new chessView(player, size, startX, startY);
-        this.logic = new chessLogic(this.board, this.player);
+        this.view = new ChessView(player, size, startX, startY);
+        this.logic = new ChessLogic(this.board, this.player);
     }
 
     createBoard = function(){
@@ -14,7 +14,7 @@ class chessGame{
 		}
 		for(var row = 0; row < 8; row++) {
 			for(var col = 0; col < 8; col++) {
-				this.board[row][col] = new square();
+				this.board[row][col] = new Square();
 			}
 		}
     }
