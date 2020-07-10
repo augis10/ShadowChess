@@ -1,4 +1,4 @@
-class chessLogic{
+class ChessLogic{
     initRow1 = [2,4,3,1,0,3,4,2];
     initRow2 = [8,10,9,7,6,9,10,8];
     boardFull = [];
@@ -6,7 +6,7 @@ class chessLogic{
         this.player = player;
         this.createBoard();
         this.initBoardFigures();
-        this.setBoard(board);
+        this.getBoard(board);
     }
 
     createBoard = function(){
@@ -15,7 +15,7 @@ class chessLogic{
 		}
 		for(var row = 0; row < 8; row++) {
 			for(var col = 0; col < 8; col++) {
-				this.boardFull[row][col] = new squareExt();
+				this.boardFull[row][col] = new SquareExt();
 			}
 		}
     }
@@ -29,7 +29,7 @@ class chessLogic{
 		}
     }
 
-    setBoard = function(board){
+    getBoard = function(board){
         for(var row = 0; row < 8; row++){
             for(var col = 0; col < 8; col++){
                 board[row][col].figure = this.boardFull[row][col].figure;
@@ -44,6 +44,38 @@ class chessLogic{
             }
         }
     }
+    getFigureMoves = function(board, row, col, visable, movable){
+        switch(board[row][col].figure) {
+            case 0:
+            case 6:
+                King.kingCtr(board, row, col, visable, movable);
+                break;
+            case 1:
+            case 7:
+                Queen.QueenCtr(board, row, col, visable, movable);
+                break;
+            case 2:
+            case 8:
+                Rook.rookCtr(board, row, col, visable, movable);
+                break;
+            case 3:
+            case 9:
+                Bishop.bishopCtr(board, row, col, visable, movable);
+                break;
+            case 4:
+            case 10:
+                Knight.knightCtr(board, row, col, visable, movable);
+                break;
+            case 5:
+            case 11:
+                Pawn.pawnCtr(board, row, col, visable, movable);
+                break;
+          }
+    }
+
+    checkMove = function(row, col, rowN, colN){
+        
+    }
 
     selectFigure = function(board, row, col){
         
@@ -53,11 +85,38 @@ class chessLogic{
         
     }
 
-    visableToBlack = function(){
-
+    resetVision = function(){
+        for(var row = 0; row < 8; row++){
+            for(var col = 0; col < 8; col++){
+                this.boardFull[row][col].blackVisable = false;
+                this.boardFull[row][col].whiteVisable = false;
+            }
+        }
     }
 
-    visableToWhite = function(){
+    getVision = function(){
+        this.resetVision();
+        for(var row = 0; row < 8; row++){
+            for(var col = 0; col < 8; col++){
+                var vis = [];
+                var mov = [];
+                fig = boardFull[row][col].figure;
+                this.getFigureMoves(this.boardFull, row, col, vis, mov);
+                for(var i = 0; i < vis.length; i++){
+                    if(fig >= 0 && fig < 6){
+                        boardFull[vis[i][0]][vis[i][1]].blackVisable = true;
+                    }
+                    if(fig >= 6 && fig < 12){
+                        boardFull[vis[i][0]][vis[i][1]].whiteVisable = true;
+                    }
+                    
+                }
+            }
+        }
+    }
+
+
+    mateCheck = function(){
 
     }
 
