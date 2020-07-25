@@ -6,22 +6,22 @@ class Figure {
 		return false;
     }
 
-    static getOccupation = function(board, row, col){
-        if(board[row][col].Figure < 6 || board[row][col].Figure >= 0){
+    static getOccupation = function(figure){
+        if(figure < 6 && figure >= 0){
             return 2; //black
         }
-        if(board[row][col].Figure >=6 || board[row][col].Figure <= 11){
+        if(figure >=6 && figure <= 11){
             return 1; //white
         }
-        if(board[row][col].Figure == null){
+        if(figure == null){
             return 0; //empty
         }
         return -1;
     }
 
-    static isEnemy = function(board, row1, col1, row2, col2){
-        sq1 = this.getOccupation(board, row1, col1);
-        sq2 = this.getOccupation(board, row2, col2);
+    static isEnemy = function(figure, figure2){
+        sq1 = this.getOccupation(figure);
+        sq2 = this.getOccupation(figure2);
         if(sq2 == 0){
             return 0;// empty
         }
@@ -40,7 +40,7 @@ class Figure {
             c = col + this.moves[i][1];
             if(this.checkSquare(r,c)){
                 visable.push([r,c]);
-                if(this.isEnemy(board, row, col, r, c) != 1) {
+                if(this.isEnemy(board[row][col], board[r][c]) != 1) {
                     movable.push([r,c]);
                 }
                 else{
@@ -60,7 +60,7 @@ class Pawn extends Figure {
 
     static cutCheck = function(board, row, col, visable, movable){
         for(var i = 0; i < 2; i ++){
-            if(board[row][col].Figure == 11){
+            if(board[row][col] == 11){
                 r = row + this.cut[i][0] * -1;
             }
             else{
@@ -70,7 +70,7 @@ class Pawn extends Figure {
             c = col + this.cut[i][1];
             if(this.checkSquare(r,c)){
                 visable.push([r,c]);
-                if(this.isEnemy(board, row, col, r, c) == 2) {
+                if(this.isEnemy(board[row][col], board[r][c]) == 2) {
                     movable.push([r,c]);
                 }
             }  
@@ -78,7 +78,7 @@ class Pawn extends Figure {
     }
 
     static upCheck = function(board, row, col, visable, movable){
-        if(board[row][col].Figure == 11){
+        if(board[row][col] == 11){
             r = row + this.cut[i][0] * -1;
         }
         else{
@@ -87,9 +87,9 @@ class Pawn extends Figure {
         c = col + this.up[0][1];
         if(this.checkSquare(r,c)){
             visable.push([r,c]);
-            if(this.isEnemy(board, row, col, r, c) == 0) {
+            if(this.isEnemy(board[row][col], board[r][c]) == 0) {
                 movable.push([r,c]);
-                if(board[row][col].Figure == 11){
+                if(board[row][col] == 11){
                     r = row + this.cut[i][0] * -1;
                 }
                 else{
@@ -98,7 +98,7 @@ class Pawn extends Figure {
                 c = col + this.up[1][1];
                 if(this.checkSquare(r,c)){
                     visable.push([r,c]);
-                    if(this.isEnemy(board, row, col, r, c) == 0 && !board[row][col].movedOnce) {
+                    if(this.isEnemy(board[row][col], board[r][c]) == 0 && (row == 6 || row == 1)) {
                         movable.push([r,c]);
                     }
                 }
@@ -116,10 +116,19 @@ class Pawn extends Figure {
 
 class King extends Figure {
     static kingCtr = function(board, row, col, visable, movable){
-        moves = [[1,1],[1,0],[1,-1],[0,1],[0,-1],[-1,1],[-1,0],[-1,-1]];
+        mov = [[1,1],[1,0],[1,-1],[0,1],[0,-1],[-1,1],[-1,0],[-1,-1]];
 
-        if(board[row][col].Figure == 0  || board[row][col].Figure == 6){
-            this.getMoves(this.moves, board, row, col, visable, movable);
+        if(board[row][col] == 0  || board[row][col] == 6){
+            for(i = 0; i < this.mov.length; i++){
+                r = row + this.mov[i][0];
+                c = col + this.mov[i][1];
+                if(this.checkSquare(r,c)){
+                    visable.push([r,c]);
+                    if(this.isEnemy(board[row][col], board[r][c]) != 1) {
+                        movable.push([r,c]);
+                    }
+                }    
+            }
         }
     }
 }
@@ -135,7 +144,7 @@ class Queen extends Figure {
     left = [[0,-1],[0,-2],[0,-3],[0,-4],[0,-5],[0,-6],[0,-7]];
 
     static queenCtr = function(board, row, col, visable, movable){
-        if(board[row][col].Figure == 1  || board[row][col].Figure == 7){
+        if(board[row][col] == 1  || board[row][col] == 7){
             this.getMoves(this.down, board, row, col, visable, movable);
             this.getMoves(this.up, board, row, col, visable, movable);
             this.getMoves(this.right, board, row, col, visable, movable);
@@ -155,7 +164,7 @@ class Rook extends Figure {
     left = [[0,-1],[0,-2],[0,-3],[0,-4],[0,-5],[0,-6],[0,-7]];
 
     static rookCtr = function(board, row, col, visable, movable){
-        if(board[row][col].Figure == 2  || board[row][col].Figure == 8){
+        if(board[row][col] == 2  || board[row][col] == 8){
             this.getMoves(this.down, board, row, col, visable, movable);
             this.getMoves(this.up, board, row, col, visable, movable);
             this.getMoves(this.right, board, row, col, visable, movable);
@@ -167,13 +176,13 @@ class Knight extends Figure {
     mov = [[1,2],[2,1],[2,-1],[1,-2],[-1,2],[-2,1],[-2,-1],[-1,-2]];
 
     static knightCtr = function(board, row, col, visable, movable){
-        if(board[row][col].Figure == 4  || board[row][col].Figure == 10){
+        if(board[row][col] == 4  || board[row][col] == 10){
             for(i = 0; i < this.mov.length; i++){
                 r = row + this.mov[i][0];
                 c = col + this.mov[i][1];
                 if(this.checkSquare(r,c)){
                     visable.push([r,c]);
-                    if(this.isEnemy(board, row, col, r, c) != 1) {
+                    if(this.isEnemy(board[row][col], board[r][c]) != 1) {
                         movable.push([r,c]);
                     }
                 }    
@@ -189,7 +198,7 @@ class Bishop extends Figure {
     upLeft = [[-1,-1],[-2,-2],[-3,-3],[-4,-4],[-5,-5],[-6,-6],[-7,-7]];
 
     static bishopCtr = function(board, row, col, visable, movable){
-        if(board[row][col].Figure == 3  || board[row][col].Figure == 9){
+        if(board[row][col] == 3  || board[row][col] == 9){
             this.getMoves(this.downRight, board, row, col, visable, movable);
             this.getMoves(this.downLeft, board, row, col, visable, movable);
             this.getMoves(this.upRight, board, row, col, visable, movable);

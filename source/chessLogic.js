@@ -1,7 +1,8 @@
 class ChessLogic{
-    initRow1 = [2,4,3,1,0,3,4,2];
-    initRow2 = [8,10,9,7,6,9,10,8];
+    turn = "white";
+    selected = null;
     boardFull = [];
+    movable = [];
     constructor(board, player){
         this.player = player;
         this.createBoard();
@@ -15,16 +16,18 @@ class ChessLogic{
 		}
 		for(var row = 0; row < 8; row++) {
 			for(var col = 0; col < 8; col++) {
-				this.boardFull[row][col] = new SquareExt();
+				this.boardFull[row][col] = new Square();
 			}
 		}
     }
 
     initBoardFigures = function(){
+        var initRow1 = [2,4,3,1,0,3,4,2];
+        var initRow2 = [8,10,9,7,6,9,10,8];
 		for(var i = 0; i < 8; i++){
-			this.boardFull[0][i].figure = this.initRow1[i];
+			this.boardFull[0][i].figure = initRow1[i];
 			this.boardFull[1][i].figure = 5;
-			this.boardFull[7][i].figure = this.initRow2[i];
+			this.boardFull[7][i].figure = initRow2[i];
 			this.boardFull[6][i].figure = 11;
 		}
     }
@@ -33,13 +36,12 @@ class ChessLogic{
         for(var row = 0; row < 8; row++){
             for(var col = 0; col < 8; col++){
                 board[row][col].figure = this.boardFull[row][col].figure;
-                board[row][col].selected = this.boardFull[row][col].selected;
                 board[row][col].movable = this.boardFull[row][col].movable;
                 if(this.player == 1){
-                    board[row][col].visable = this.boardFull[row][col].whiteVisable;
+                    board[row][col].whiteVisable = this.boardFull[row][col].whiteVisable;
                 }
                 if(this.player == 2){
-                    board[row][col].visable = this.boardFull[row][col].blackVisable;
+                    board[row][col].blackVisable = this.boardFull[row][col].blackVisable;
                 }
             }
         }
@@ -73,18 +75,6 @@ class ChessLogic{
           }
     }
 
-    checkMove = function(row, col, rowN, colN){
-        
-    }
-
-    selectFigure = function(board, row, col){
-        
-    }
-
-    moveFigure = function(board, row, col, newRow, newCol){
-        
-    }
-
     resetVision = function(){
         for(var row = 0; row < 8; row++){
             for(var col = 0; col < 8; col++){
@@ -94,33 +84,34 @@ class ChessLogic{
         }
     }
 
-    getVision = function(){
-        this.resetVision();
+    getVision = function(board, visW, visB){
+        var mov = [];
         for(var row = 0; row < 8; row++){
             for(var col = 0; col < 8; col++){
-                var vis = [];
-                var mov = [];
                 fig = boardFull[row][col].figure;
-                this.getFigureMoves(this.boardFull, row, col, vis, mov);
-                for(var i = 0; i < vis.length; i++){
-                    if(fig >= 0 && fig < 6){
-                        boardFull[vis[i][0]][vis[i][1]].blackVisable = true;
-                    }
-                    if(fig >= 6 && fig < 12){
-                        boardFull[vis[i][0]][vis[i][1]].whiteVisable = true;
-                    }
-                    
+                if(fig >= 0 && fig < 6){
+                    this.getFigureMoves(board, row, col, visB, mov);
+                }
+                if(fig >= 6 && fig < 12){
+                    this.getFigureMoves(board, row, col, visW, mov);
                 }
             }
         }
     }
 
+    select = function(row, col){
 
-    mateCheck = function(){
-
+        console.log("select");
+    }
+    deselect = function(){
+        console.log("deselect")
     }
 
+    move = function(row, col){
+        console.log("move");
+    }
     
-    
-
+    gameOver = function(){
+        return false;
+    }
 }
