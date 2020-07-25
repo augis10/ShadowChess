@@ -1,7 +1,10 @@
 
 class ChessGame{
     board = [];
-    movalble = [];
+    movable = [];
+    selected = null;
+    gameOver = false;
+    turn = 1;
     constructor(player, size, startX, startY){
         this.player = player; // //player type 1-white, 2-black
         this.createBoard();
@@ -29,41 +32,79 @@ class ChessGame{
 
     checkFigure = function(row, col){
         if(this.board[row][col].figure >= 0 && this.board[row][col].figure <=6){
-            return "black";
+            return 0;
         }
         if(this.board[row][col].figure >= 7 && this.board[row][col].figure <=11){
-            return "white";
+            return 1;
         }
-        return '';
+        return null;
     }
 
-    checkSelected = function(row, col){
-        if(this.logic.selected == null){
-            return true;
+    inMovable = function(row, col){
+        for(var i = 0; i < this.movable.length; i++){
+            if(this.movable[i][0] == row && this.movable[i][1] == col){
+                return true;
+            }
         }
-        if((this.logic.selected[0] != row || this.logic.selected[1] != row) && this.checkFigure(row, col) == this.player ){
-            return true;
-        }
-        if(this.logic.selected[0] == row && this.logic.selected[1] == row)
         return false;
+    }
+
+    isSameFig = function(row, col){
+        if(this.selected != null){
+            if(this.selected[0] == row && this.selected[1] == col){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    select = function(row, col){
+        if(this.checkFigure(row, col) == player){
+            this.selected = [row, col];
+            this.movable = this.logic.select(this.board, row , col);
+            this.movable.push([row,col]);
+        }
+        
+    }
+
+    deSelect = function(){
+        this.selected = null;
+        this.movable = [];
+    }
+
+    move = function(row, col){
+        var fig = this.board[this.selected[0]][this.selected[1]].figure;
+        this.board[this.selected[0]][this.selected[1]].figure = null;
+        this.board[row][col].figure = fig;
+        this.turn++;
     }
 
     input = function(row, col){
         if(!this.checkInput(row, col)){
-            return 0;
+            return;
         }
-        if(this.logic.gameOver() || this.logic.turn != player){
-            return 0;
+        else if(this.gameOver || this.turn % 2 != this.player){
+            return;
         }
-        if(this.logic.turn = player){
-            if(this.checkSelected(row, col)){
-                this.logic.select(row, col);
+        if(this.turn % 2 == player){
+            if(this.selected == null && this.checkFigure(row, col) == this.player){
+                this.select(row, col);
+                console.log("select1");
             }
-            if(this.logic.selected != null){
-                this.logic.move(row, col);
+            else if((!this.inMovable(row, col) && this.checkFigure(row, col) != this.player) || this.isSameFig(row, col)){
+                this.deSelect();
+                console.log("deSelect");
+            }
+            else if(this.checkFigure(row, col) == this.player && !this.isSameFig(row, col)){
+                this.select(row, col);
+                console.log("select2");
+            }
+            else if(this.inMovable(row, col)){
+                this.move(row, col);
+                console.log("move");
             }
         }
-        return 0;
+        
     }
 
     inputOpp = function(row, col){
@@ -71,6 +112,6 @@ class ChessGame{
     }
     
     draw = function(){
-        this.view.draw(this.movalble, this.board);
+        this.view.draw(this.movable, this.board);
     }
 }

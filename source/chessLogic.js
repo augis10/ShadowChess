@@ -100,8 +100,9 @@ class ChessLogic{
     }
 
     select = function(row, col){
-
+        var arr = [];
         console.log("select");
+        return arr;
     }
     deselect = function(){
         console.log("deselect")

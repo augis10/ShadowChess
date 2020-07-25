@@ -36,7 +36,7 @@ class ChessView{
         if(this.player == 1 && !wVisable){
 			rect(this.x + col * this.sqSize, this.y + (row) *this.sqSize, this.sqSize, this.sqSize);
 		}
-		if(this.player == 2 && !bVisable){
+		if(this.player == 0 && !bVisable){
 			rect(this.x + (7-col) * this.sqSize, this.y + (7-row) *this.sqSize, this.sqSize, this.sqSize);
 		}
     }
@@ -45,24 +45,25 @@ class ChessView{
 		if(this.player == 1 && wVisable){
 			image(this.figureImgs[figure], this.x + col * this.sqSize, this.y + (row) * this.sqSize, this.sqSize, this.sqSize);
 		}
-		if(this.player == 2 && bVisable){
+		if(this.player == 0 && bVisable){
 			image(this.figureImgs[figure], this.x + (7-col) * this.sqSize, this.y + (7-row) * this.sqSize, this.sqSize, this.sqSize);
 		}
     }
 
     drawMovable = function(movable){
         fill(51, 204, 51);
-        for(var i = 0; i < movable.length; i++){
-            row = movable[i][0];
-            col = movable[i][1];
-            if(this.player == 1){
-                rect(this.x + col * this.sqSize, this.y + (row) *this.sqSize, this.sqSize, this.sqSize);
-            }
-            if(this.player == 2){
-                rect(this.x + (7-col) * this.sqSize, this.y + (7-row) *this.sqSize, this.sqSize, this.sqSize);
-            }
-        }
-        
+        if(movable != null){
+            for(var i = 0; i < movable.length; i++){
+                var row = movable[i][0];
+                var col = movable[i][1];
+                if(this.player == 1){
+                    rect(this.x + col * this.sqSize, this.y + (row) *this.sqSize, this.sqSize, this.sqSize);
+                }
+                if(this.player == 0){
+                    rect(this.x + (7-col) * this.sqSize, this.y + (7-row) *this.sqSize, this.sqSize, this.sqSize);
+                }
+            }   
+        }      
     }
 
     drawSquares = function(board){
@@ -71,7 +72,7 @@ class ChessView{
                 if(board[row][col].figure != null){
                     this.drawFigure(board[row][col].figure, row, col, board[row][col].whiteVisable, board[row][col].blackVisable);
                 }
-                this.drawFog(row, col,board[row][col].whiteVisable, board[row][col].blackVisable);
+                this.drawFog(row, col, board[row][col].whiteVisable, board[row][col].blackVisable);
 			}
 		}
     }
