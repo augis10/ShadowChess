@@ -10,7 +10,7 @@ class ChessGame{
         this.createBoard();
         this.initBoardFigures();
         this.view = new ChessView(player, size, startX, startY);
-        this.logic = new ChessLogic(this.board, this.player);
+        this.logic = new ChessLogic();
     }
 
     createBoard = function(){
@@ -43,10 +43,10 @@ class ChessGame{
     }
 
     checkFigure = function(row, col){
-        if(this.board[row][col].figure >= 0 && this.board[row][col].figure <=6){
+        if(this.board[row][col].figure >= 0 && this.board[row][col].figure <6){
             return 0;
         }
-        if(this.board[row][col].figure >= 7 && this.board[row][col].figure <=11){
+        if(this.board[row][col].figure >= 6 && this.board[row][col].figure <=11){
             return 1;
         }
         return null;

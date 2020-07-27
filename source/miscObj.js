@@ -7,4 +7,8 @@ class Square{
 class VisMov{
     visable = [];
     movable = [];
+    constructor(){
+        this.visable = [];
+        this.movable = [];
+    }
 }
