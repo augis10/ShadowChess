@@ -3,3 +3,8 @@ class Square{
     blackVisable = true;
     whiteVisable = true;
 }
+
+class VisMov{
+    visable = [];
+    movable = [];
+}

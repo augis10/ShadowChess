@@ -8,6 +8,7 @@ class ChessGame{
     constructor(player, size, startX, startY){
         this.player = player; // //player type 1-white, 2-black
         this.createBoard();
+        this.initBoardFigures();
         this.view = new ChessView(player, size, startX, startY);
         this.logic = new ChessLogic(this.board, this.player);
     }
@@ -20,6 +21,17 @@ class ChessGame{
 			for(var col = 0; col < 8; col++) {
 				this.board[row][col] = new Square();
 			}
+		}
+    }
+
+    initBoardFigures = function(){
+        var initRow1 = [2,4,3,1,0,3,4,2];
+        var initRow2 = [8,10,9,7,6,9,10,8];
+		for(var i = 0; i < 8; i++){
+			this.board[0][i].figure = initRow1[i];
+			this.board[1][i].figure = 5;
+			this.board[7][i].figure = initRow2[i];
+			this.board[6][i].figure = 11;
 		}
     }
 
@@ -77,6 +89,7 @@ class ChessGame{
         this.board[this.selected[0]][this.selected[1]].figure = null;
         this.board[row][col].figure = fig;
         this.turn++;
+        this.gameOver = this.logic.gameOver(board);
     }
 
     input = function(row, col){
