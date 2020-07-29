@@ -1,4 +1,6 @@
 class Figure {
+    static visable = [];
+    static movable = [];
     static checkSquare = function(Row, Col){
 		if(Row >= 0 && Row <= 7 && Col >=0  && Col <= 7){
 			return true;
@@ -6,23 +8,24 @@ class Figure {
 		return false;
     }
 
-    static getOccupation = function(board, row, col){
-        if(board[row][col].Figure < 6 || board[row][col].Figure >= 0){
-            return 2; //black
+    static getOccupation = function(figure){
+        if(figure == null){
+            return 2; //empty
         }
-        if(board[row][col].Figure >=6 || board[row][col].Figure <= 11){
+        if(figure < 6 && figure >= 0){
+            return 0; //black
+        }
+        if(figure >=6 && figure <= 11){
             return 1; //white
         }
-        if(board[row][col].Figure == null){
-            return 0; //empty
-        }
+        
         return -1;
     }
 
-    static isEnemy = function(board, row1, col1, row2, col2){
-        sq1 = this.getOccupation(board, row1, col1);
-        sq2 = this.getOccupation(board, row2, col2);
-        if(sq2 == 0){
+    static isEnemy = function(figure, figure2){
+        var sq1 = this.getOccupation(figure);
+        var sq2 = this.getOccupation(figure2);
+        if(sq2 == 2 || sq1 == 2){
             return 0;// empty
         }
         if(sq1 == sq2){
@@ -34,14 +37,15 @@ class Figure {
         return -1;
     }
 
-    static getMoves = function(moves, board, row, col, visable, movable){
+    static getMoves = function(moves, board, row, col){
+        var r,c;
         for(var i = 0; i < moves.length; i++){
-            r = row + this.moves[i][0];
-            c = col + this.moves[i][1];
+            r = row + moves[i][0];
+            c = col + moves[i][1];
             if(this.checkSquare(r,c)){
-                visable.push([r,c]);
-                if(this.isEnemy(board, row, col, r, c) != 1) {
-                    movable.push([r,c]);
+                this.visable.push([r,c]);
+                if(this.isEnemy(board[row][col], board[r][c]) != 1) {
+                    this.movable.push([r,c]);
                 }
                 else{
                     break;
@@ -52,15 +56,28 @@ class Figure {
             } 
         }
     }
+
+    static getVM = function(){
+        var vm = new VisMov();
+        for(var i = 0; i < this.visable.length; i++){
+            vm.visable.push([this.visable[i][0],this.visable[i][1]]);
+        }
+        for(var i = 0; i < this.movable.length; i++){
+            vm.movable.push([this.movable[i][0],this.movable[i][1]]);
+        }
+        return vm;
+    }
 }
 
-class Pawn extends Figure {
-    up = [[1,0],[2,0]];
-    cut = [[1,1],[1,-1]];
 
-    static cutCheck = function(board, row, col, visable, movable){
+class Pawn extends Figure {
+    static up = [[1,0],[2,0]];
+    static cut = [[1,1],[1,-1]];
+
+    static cutCheck = function(board, row, col){
+        var r,c;
         for(var i = 0; i < 2; i ++){
-            if(board[row][col].Figure == 11){
+            if(board[row][col] == 11){
                 r = row + this.cut[i][0] * -1;
             }
             else{
@@ -69,132 +86,168 @@ class Pawn extends Figure {
             
             c = col + this.cut[i][1];
             if(this.checkSquare(r,c)){
-                visable.push([r,c]);
-                if(this.isEnemy(board, row, col, r, c) == 2) {
-                    movable.push([r,c]);
+                this.visable.push([r,c]);
+                if(this.isEnemy(board[row][col], board[r][c]) == 2) {
+                    this.movable.push([r,c]);
                 }
             }  
         }
     }
 
-    static upCheck = function(board, row, col, visable, movable){
-        if(board[row][col].Figure == 11){
-            r = row + this.cut[i][0] * -1;
+    static upCheck = function(board, row, col){
+        var r,c;
+        if(board[row][col] == 11){
+            r = row + this.up[0][0] * -1;
         }
         else{
-            r = row + this.cut[i][0];
+            r = row + this.up[0][0];
         }
         c = col + this.up[0][1];
         if(this.checkSquare(r,c)){
-            visable.push([r,c]);
-            if(this.isEnemy(board, row, col, r, c) == 0) {
-                movable.push([r,c]);
-                if(board[row][col].Figure == 11){
-                    r = row + this.cut[i][0] * -1;
+            this.visable.push([r,c]);
+            if(this.isEnemy(board[row][col], board[r][c]) == 0) {
+                this.movable.push([r,c]);
+                if(board[row][col] == 11){
+                    r = row + this.up[1][0] * -1;
                 }
                 else{
-                    r = row + this.cut[i][0];
+                    r = row + this.up[1][0];
                 }
                 c = col + this.up[1][1];
                 if(this.checkSquare(r,c)){
-                    visable.push([r,c]);
-                    if(this.isEnemy(board, row, col, r, c) == 0 && !board[row][col].movedOnce) {
-                        movable.push([r,c]);
+                    this.visable.push([r,c]);
+                    if(this.isEnemy(board[row][col], board[r][c]) == 0 && ((row == 6) || row == 1)) {
+                        this.movable.push([r,c]);
                     }
                 }
             }
         }
     }
 
-    static pawnCtr = function(board, row, col, visable, movable){
-        if(board[row][col].Figure == 5 || board[row][col].Figure == 11){
-            this.upCheck(board, row, col, visable, movable);
-            this.cutCheck(board, row, col, visable, movable);
+    static pawnCtr = function(board, row, col){
+        var vm = new VisMov();
+        if(board[row][col] == 5 || board[row][col] == 11){
+            this.visable = [];
+            this.movable = [];
+            this.upCheck(board, row, col);
+            this.cutCheck(board, row, col);
+            vm = this.getVM();
         }
+        return vm;
     }
 }
 
 class King extends Figure {
-    static kingCtr = function(board, row, col, visable, movable){
-        moves = [[1,1],[1,0],[1,-1],[0,1],[0,-1],[-1,1],[-1,0],[-1,-1]];
+    static mov = [[1,1],[1,0],[1,-1],[0,1],[0,-1],[-1,1],[-1,0],[-1,-1]];
 
-        if(board[row][col].Figure == 0  || board[row][col].Figure == 6){
-            this.getMoves(this.moves, board, row, col, visable, movable);
-        }
-    }
-}
-
-class Queen extends Figure {
-    downRight = [[1,1],[2,2],[3,3],[4,4],[5,5],[6,6],[7,7]];
-    downLeft = [[1,-1],[2,-2],[3,-3],[4,-4],[5,-5],[6,-6],[7,-7]];
-    upRight = [[-1,1],[-2,2],[-3,3],[-4,4],[-5,5],[-6,6],[-7,7]];
-    upLeft = [[-1,-1],[-2,-2],[-3,-3],[-4,-4],[-5,-5],[-6,-6],[-7,-7]];
-    down = [[1,0],[2,0],[3,0],[4,0],[5,0],[6,0],[7,0]];
-    up = [[-1,0],[-2,0],[-3,0],[-4,0],[-5,0],[-6,0],[-7,0]];
-    right = [[0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[0,7]];
-    left = [[0,-1],[0,-2],[0,-3],[0,-4],[0,-5],[0,-6],[0,-7]];
-
-    static queenCtr = function(board, row, col, visable, movable){
-        if(board[row][col].Figure == 1  || board[row][col].Figure == 7){
-            this.getMoves(this.down, board, row, col, visable, movable);
-            this.getMoves(this.up, board, row, col, visable, movable);
-            this.getMoves(this.right, board, row, col, visable, movable);
-            this.getMoves(this.left, board, row, col, visable, movable);
-            this.getMoves(this.downRight, board, row, col, visable, movable);
-            this.getMoves(this.downLeft, board, row, col, visable, movable);
-            this.getMoves(this.upRight, board, row, col, visable, movable);
-            this.getMoves(this.upLeft, board, row, col, visable, movable);
-        }
-    }
-}
-
-class Rook extends Figure {
-    down = [[1,0],[2,0],[3,0],[4,0],[5,0],[6,0],[7,0]];
-    up = [[-1,0],[-2,0],[-3,0],[-4,0],[-5,0],[-6,0],[-7,0]];
-    right = [[0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[0,7]];
-    left = [[0,-1],[0,-2],[0,-3],[0,-4],[0,-5],[0,-6],[0,-7]];
-
-    static rookCtr = function(board, row, col, visable, movable){
-        if(board[row][col].Figure == 2  || board[row][col].Figure == 8){
-            this.getMoves(this.down, board, row, col, visable, movable);
-            this.getMoves(this.up, board, row, col, visable, movable);
-            this.getMoves(this.right, board, row, col, visable, movable);
-            this.getMoves(this.left, board, row, col, visable, movable);
-        }
-    }
-}
-class Knight extends Figure {
-    mov = [[1,2],[2,1],[2,-1],[1,-2],[-1,2],[-2,1],[-2,-1],[-1,-2]];
-
-    static knightCtr = function(board, row, col, visable, movable){
-        if(board[row][col].Figure == 4  || board[row][col].Figure == 10){
-            for(i = 0; i < this.mov.length; i++){
+    static kingCtr = function(board, row, col){
+        var vm = new VisMov();
+        var r,c;
+        if(board[row][col] == 0  || board[row][col] == 6){
+            for(var i = 0; i < this.mov.length; i++){
                 r = row + this.mov[i][0];
                 c = col + this.mov[i][1];
                 if(this.checkSquare(r,c)){
-                    visable.push([r,c]);
-                    if(this.isEnemy(board, row, col, r, c) != 1) {
-                        movable.push([r,c]);
+                    vm.visable.push([r,c]);
+                    if(this.isEnemy(board[row][col], board[r][c]) != 1) {
+                        vm.movable.push([r,c]);
                     }
                 }    
             }
         }
+        return vm;
+    }
+}
+
+class Queen extends Figure {
+    static downRight = [[1,1],[2,2],[3,3],[4,4],[5,5],[6,6],[7,7]];
+    static downLeft = [[1,-1],[2,-2],[3,-3],[4,-4],[5,-5],[6,-6],[7,-7]];
+    static upRight = [[-1,1],[-2,2],[-3,3],[-4,4],[-5,5],[-6,6],[-7,7]];
+    static upLeft = [[-1,-1],[-2,-2],[-3,-3],[-4,-4],[-5,-5],[-6,-6],[-7,-7]];
+    static down = [[1,0],[2,0],[3,0],[4,0],[5,0],[6,0],[7,0]];
+    static up = [[-1,0],[-2,0],[-3,0],[-4,0],[-5,0],[-6,0],[-7,0]];
+    static right = [[0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[0,7]];
+    static left = [[0,-1],[0,-2],[0,-3],[0,-4],[0,-5],[0,-6],[0,-7]];
+
+    static queenCtr = function(board, row, col){
+        var vm = new VisMov();
+        if(board[row][col] == 1  || board[row][col] == 7){
+            this.visable = [];
+            this.movable = [];
+            this.getMoves(this.down, board, row, col);
+            this.getMoves(this.up, board, row, col);
+            this.getMoves(this.right, board, row, col);
+            this.getMoves(this.left, board, row, col);
+            this.getMoves(this.downRight, board, row, col);
+            this.getMoves(this.downLeft, board, row, col);
+            this.getMoves(this.upRight, board, row, col);
+            this.getMoves(this.upLeft, board, row, col);
+            vm = this.getVM();
+        }
+        return vm;
+    }
+}
+
+class Rook extends Figure {
+    static down = [[1,0],[2,0],[3,0],[4,0],[5,0],[6,0],[7,0]];
+    static up = [[-1,0],[-2,0],[-3,0],[-4,0],[-5,0],[-6,0],[-7,0]];
+    static right = [[0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[0,7]];
+    static left = [[0,-1],[0,-2],[0,-3],[0,-4],[0,-5],[0,-6],[0,-7]];
+
+    static rookCtr = function(board, row, col){
+        var vm = new VisMov();
+        if(board[row][col] == 2  || board[row][col] == 8){
+            this.visable = [];
+            this.movable = [];
+            this.getMoves(this.down, board, row, col);
+            this.getMoves(this.up, board, row, col);
+            this.getMoves(this.right, board, row, col);
+            this.getMoves(this.left, board, row, col);
+            vm = this.getVM();
+        }
+        return vm;
+    }
+}
+class Knight extends Figure {
+    static mov = [[1,2],[2,1],[2,-1],[1,-2],[-1,2],[-2,1],[-2,-1],[-1,-2]];
+
+    static knightCtr = function(board, row, col){
+        var vm = new VisMov();
+        var r,c;
+        if(board[row][col] == 4  || board[row][col] == 10){
+            for(var i = 0; i < this.mov.length; i++){
+                r = row + this.mov[i][0];
+                c = col + this.mov[i][1];
+                if(this.checkSquare(r,c)){
+                    vm.visable.push([r,c]);
+                    if(this.isEnemy(board[row][col], board[r][c]) != 1) {
+                        vm.movable.push([r,c]);
+                    }
+                }    
+            }
+        }
+        return vm;
     }
 }
 
 class Bishop extends Figure {
-    downRight = [[1,1],[2,2],[3,3],[4,4],[5,5],[6,6],[7,7]];
-    downLeft = [[1,-1],[2,-2],[3,-3],[4,-4],[5,-5],[6,-6],[7,-7]];
-    upRight = [[-1,1],[-2,2],[-3,3],[-4,4],[-5,5],[-6,6],[-7,7]];
-    upLeft = [[-1,-1],[-2,-2],[-3,-3],[-4,-4],[-5,-5],[-6,-6],[-7,-7]];
+    static downRight = [[1,1],[2,2],[3,3],[4,4],[5,5],[6,6],[7,7]];
+    static downLeft = [[1,-1],[2,-2],[3,-3],[4,-4],[5,-5],[6,-6],[7,-7]];
+    static upRight = [[-1,1],[-2,2],[-3,3],[-4,4],[-5,5],[-6,6],[-7,7]];
+    static upLeft = [[-1,-1],[-2,-2],[-3,-3],[-4,-4],[-5,-5],[-6,-6],[-7,-7]];
 
-    static bishopCtr = function(board, row, col, visable, movable){
-        if(board[row][col].Figure == 3  || board[row][col].Figure == 9){
-            this.getMoves(this.downRight, board, row, col, visable, movable);
-            this.getMoves(this.downLeft, board, row, col, visable, movable);
-            this.getMoves(this.upRight, board, row, col, visable, movable);
-            this.getMoves(this.upLeft, board, row, col, visable, movable);
+    static bishopCtr = function(board, row, col){
+        var vm = new VisMov();
+        if(board[row][col] == 3  || board[row][col] == 9){
+            this.visable = [];
+            this.movable = [];
+            this.getMoves(this.downRight, board, row, col);
+            this.getMoves(this.downLeft, board, row, col);
+            this.getMoves(this.upRight, board, row, col);
+            this.getMoves(this.upLeft, board, row, col);
+            vm = this.getVM();
         }
+        return vm;
     }
 }
 
