@@ -3,7 +3,7 @@ class ChessGame{
     board = [];
     movable = [];
     selected = null;
-    gameOver = false;
+    gameOver = -1;
     turn = 1;
     constructor(player, size, startX, startY){
         this.player = player; // //player type 1-white, 2-black
@@ -89,14 +89,15 @@ class ChessGame{
         this.board[this.selected[0]][this.selected[1]].figure = null;
         this.board[row][col].figure = fig;
         this.turn++;
-        this.gameOver = this.logic.gameOver(board);
+        this.deSelect();
+        this.gameOver = this.logic.gameOver(this.board, this.turn);
     }
 
     input = function(row, col){
         if(!this.checkInput(row, col)){
             return;
         }
-        else if(this.gameOver || this.turn % 2 != this.player){
+        else if(this.gameOver != -1 || this.turn % 2 != this.player){
             return;
         }
         if(this.turn % 2 == player){

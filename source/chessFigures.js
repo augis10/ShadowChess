@@ -10,10 +10,10 @@ class Figure {
 
     static getOccupation = function(figure){
         if(figure == null){
-            return 0; //empty
+            return 2; //empty
         }
         if(figure < 6 && figure >= 0){
-            return 2; //black
+            return 0; //black
         }
         if(figure >=6 && figure <= 11){
             return 1; //white
@@ -25,7 +25,7 @@ class Figure {
     static isEnemy = function(figure, figure2){
         var sq1 = this.getOccupation(figure);
         var sq2 = this.getOccupation(figure2);
-        if(sq2 == 0 || sq1 == 0){
+        if(sq2 == 2 || sq1 == 2){
             return 0;// empty
         }
         if(sq1 == sq2){
