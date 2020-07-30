@@ -11,6 +11,7 @@ class ChessGame{
         this.initBoardFigures();
         this.view = new ChessView(player, size, startX, startY);
         this.logic = new ChessLogic();
+        this.updateVisable();
     }
 
     createBoard = function(){
@@ -33,6 +34,34 @@ class ChessGame{
 			this.board[7][i].figure = initRow2[i];
 			this.board[6][i].figure = 11;
 		}
+    }
+    resetVisable = function(){
+        for(var row = 0; row < 8; row++){
+            for(var col = 0; col < 8; col++){
+                this.board[row][col].blackVisable = false;
+                this.board[row][col].whiteVisable = false;
+                if(Figure.getOccupation(this.board[row][col].figure) == 0){
+                    this.board[row][col].blackVisable = true;
+                }
+                if(Figure.getOccupation(this.board[row][col].figure) == 1){
+                    this.board[row][col].whiteVisable = true;
+                }
+            }
+        }
+    }
+
+    updateVisable = function(){
+        this.resetVisable();
+        var vis = this.logic.getVisable(this.board, this.player);
+        console.log(vis);
+        for(var i = 0; i < vis.length; i++){
+            if(this.player == 0){
+                this.board[vis[i][0]][vis[i][1]].blackVisable = true;
+            }
+            else if(this.player == 1) {
+                this.board[vis[i][0]][vis[i][1]].whiteVisable = true;
+            }
+        }
     }
 
     checkInput = function(row, col){
@@ -88,9 +117,10 @@ class ChessGame{
         var fig = this.board[this.selected[0]][this.selected[1]].figure;
         this.board[this.selected[0]][this.selected[1]].figure = null;
         this.board[row][col].figure = fig;
-        this.turn++;
         this.deSelect();
         this.gameOver = this.logic.gameOver(this.board, this.turn);
+        this.turn++;
+        this.updateVisable();
     }
 
     input = function(row, col){
@@ -100,7 +130,7 @@ class ChessGame{
         else if(this.gameOver != -1 || this.turn % 2 != this.player){
             return;
         }
-        if(this.turn % 2 == player){
+        if(this.turn % 2 == this.player){
             if(this.selected == null && this.checkFigure(row, col) == this.player){
                 this.select(row, col);
                 console.log("select1");
@@ -121,11 +151,26 @@ class ChessGame{
         
     }
 
-    inputOpp = function(row, col){
-
+    inputOpp = function(row, col, rowN, colN){
+        if(!this.checkInput(row, col) && !checkInput(rowN, colN)){
+            return;
+        }
+        else if(this.gameOver != -1 || this.turn % 2 == this.player){
+            return;
+        }
+        if(this.turn % 2 != this.player){
+            if(this.logic.move(this.board, row, col, rowN, colN)){
+                var fig = this.board[row][col].figure;
+                this.board[row][col].figure = null;
+                this.board[rowN][colN].figure = fig;
+                this.gameOver = this.logic.gameOver(this.board, this.turn);
+                this.turn++;
+            }
+        }
     }
     
     draw = function(){
         this.view.draw(this.movable, this.board);
+        
     }
 }

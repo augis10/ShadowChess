@@ -46,12 +46,14 @@ class ChessLogic{
         return board;
     }
 
-    getVisable = function(board, player){
+    getVisable = function(boardF, player){
         var visable = [];
+        var board = this.copyBoard(boardF);
         for(var row = 0; row < 8; row++){
             for(var col = 0; col < 8; col++){
                 if(Figure.getOccupation(board[row][col]) == player){
                     var vm = this.getFigureMoves(board, row, col);
+                    //console.log(vm);
                     for(var i = 0; i < vm.visable.length; i++){
                         visable.push([vm.visable[i][0], vm.visable[i][1]]);
                     }
@@ -128,7 +130,7 @@ class ChessLogic{
         var arr = [];
         var board = this.copyBoard(boardF);
         vm = this.getFigureMoves(board, row, col);
-        var vis = this.getVisable(board, 1);
+        var vis = this.getVisable(boardF, 1);
         var mov = this.legalMoves(board, 1);
         for(var i = 0; i < vm.movable.length; i++){
             if(this.checkMove(board, row, col, vm.movable[i][0], vm.movable[i][1])){
@@ -173,10 +175,10 @@ class ChessLogic{
     gameOver = function(boardF, turn){
         var board = this.copyBoard(boardF);
         var existsMoves = this.existsLegalMoves(board, turn);
-        console.log(existsMoves);
+        //console.log(existsMoves);
         if(!existsMoves){
             var inCheck = this.isInCheck(board, (turn % 2));
-            console.log(inCheck);
+            //console.log(inCheck);
             if(inCheck){
                 return (turn % 2);
             }
@@ -186,7 +188,7 @@ class ChessLogic{
             
         }
         var insMat = this.insMat(board);
-        console.log(insMat);
+        //console.log(insMat);
         if(insMat){
             return 3;
         }

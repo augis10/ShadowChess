@@ -114,7 +114,7 @@ class Pawn extends Figure {
                     r = row + this.up[1][0];
                 }
                 c = col + this.up[1][1];
-                if(this.checkSquare(r,c)){
+                if(this.checkSquare(r,c) && ((row == 6) || row == 1)){
                     this.visable.push([r,c]);
                     if(this.isEnemy(board[row][col], board[r][c]) == 0 && ((row == 6) || row == 1)) {
                         this.movable.push([r,c]);
