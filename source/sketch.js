@@ -3,12 +3,20 @@ var game;
 var boardDiv = boardSize/8;
 var selected;
 var player = 1;
+
+var database = fire.database();
+var clicks = 0;
 function setup() {
 	createCanvas(boardSize, boardSize);
 	game = new ChessGame(player, boardSize, 0, 0);
 }
 
 function mouseClicked() {
+	
+	database.ref('clicks').set({
+		clickNumber: clicks
+	});
+	clicks++;
 	var sq = getSquare();
 	game.input(sq[0], sq[1]);
 }
