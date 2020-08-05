@@ -1,13 +1,15 @@
-var boardSize = 600;
-var game1;
+var boardSize = 800;
+var game;
 var boardDiv = boardSize/8;
 var selected;
 var player = 1;
-var player2 = 0
+
+var database = fire.database();
+var clicks = 0;
+
 function setup() {
-	createCanvas(boardSize, boardSize*2);
-    game = new ChessGame(player, boardSize, 0, 0);
-    game2 = new ChessGame(player2, boardSize, 0, boardSize)
+	createCanvas(boardSize, boardSize);
+	game = new ChessGame(player, boardSize, 0, 0, true);
 }
 
 function mouseClicked() {
@@ -26,6 +28,6 @@ var getSquare = function(){
 
 function draw() {
 	background(255);
-    game.draw();
-    game2.draw();
+	game.draw();
 }
+

@@ -11,7 +11,6 @@ class ChessLogic{
     }
 
     getFigureMoves = function(board, row, col){
-        var vm = new VisMov();
         switch(board[row][col]) {
             case 0:
             case 6:
@@ -31,7 +30,7 @@ class ChessLogic{
             case 5:
             case 11:
                 return Pawn.pawnCtr(board, row, col);
-          }
+        }
     }
     copyBoard(boardF){
         var board = [];
@@ -88,7 +87,7 @@ class ChessLogic{
         for(var i = 0; i < mov.length; i++){
             if(board[mov[i][0]][mov[i][1]] == 6 * player){
                 legal = false;
-                break;
+                return legal;
             }
         }
         legal = true;
@@ -129,9 +128,11 @@ class ChessLogic{
         var vm = new VisMov();
         var arr = [];
         var board = this.copyBoard(boardF);
+        console.log(board);
         vm = this.getFigureMoves(board, row, col);
-        var vis = this.getVisable(boardF, 1);
-        var mov = this.legalMoves(board, 1);
+        //var vis = this.getVisable(boardF, this.player);
+        //var mov = this.legalMoves(board, this.player);
+        console.log(vm);
         for(var i = 0; i < vm.movable.length; i++){
             if(this.checkMove(board, row, col, vm.movable[i][0], vm.movable[i][1])){
                 arr.push([vm.movable[i][0], vm.movable[i][1]]);

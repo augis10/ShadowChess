@@ -5,8 +5,10 @@ class ChessGame{
     selected = null;
     gameOver = -1;
     turn = 1;
-    constructor(player, size, startX, startY){
-        this.player = player; // //player type 1-white, 2-black
+    constructor(player, size, startX, startY, demo){
+        this.player = player;
+        this.dem = demo;
+        // //player type 1-white, 2-black
         this.createBoard();
         this.initBoardFigures();
         this.view = new ChessView(player, size, startX, startY);
@@ -120,7 +122,20 @@ class ChessGame{
         this.deSelect();
         this.gameOver = this.logic.gameOver(this.board, this.turn);
         this.turn++;
+        if(this.dem){
+            this.demo();
+        }
         this.updateVisable();
+        
+    }
+
+    demo = function(){
+        if(this.player == 1){
+            this.player = 0;
+        }
+        else {
+            this.player = 1;
+        }
     }
 
     input = function(row, col){

@@ -47,7 +47,7 @@ class Figure {
                 if(this.isEnemy(board[row][col], board[r][c]) != 1) {
                     this.movable.push([r,c]);
                 }
-                else{
+                if(this.isEnemy(board[row][col], board[r][c]) != 0){
                     break;
                 }
             }
