@@ -1,3 +1,5 @@
+//fire.functions().useFunctionsEmulator('http://localhost:5001');
+
 var boardSize = 800;
 var game;
 var boardDiv = boardSize/8;
@@ -5,11 +7,29 @@ var selected;
 var player = 1;
 
 var database = fire.database();
-var clicks = 0;
+var functions = fire.functions();
 
 function setup() {
+	var getGameId = functions.httpsCallable('getGameId');
+	//console.log(getGameId);
+
+	database.ref("/test").push({
+		x: 20
+	});
+
+	getGameId({
+		name: 'gggo'
+	}).then(function(result){
+		console.log(result.data);
+
+		database.ref("/games/"+ result.data).on("value", function(dataSnapshot){
+			console.log("pasikeite");
+		});
+	});
+
 	createCanvas(boardSize, boardSize);
 	game = new ChessGame(player, boardSize, 0, 0, true);
+
 }
 
 function mouseClicked() {
