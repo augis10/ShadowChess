@@ -10,22 +10,23 @@ var database = fire.database();
 var functions = fire.functions();
 
 function setup() {
+	var getUserId = functions.httpsCallable('getUserId');
 	var getGameId = functions.httpsCallable('getGameId');
-	//console.log(getGameId);
-
-	database.ref("/test").push({
-		x: 20
-	});
-
-	getGameId({
-		name: 'gggo'
-	}).then(function(result){
+	var userId, gameId;
+	getUserId({}).then(function(result){
+		userId = result.data;
 		console.log(result.data);
-
-		database.ref("/games/"+ result.data).on("value", function(dataSnapshot){
-			console.log("pasikeite");
+		getGameId({
+			playerId: userId
+		}).then(function(result2){
+			gameId = result2.data;
+			console.log(result2.data);
 		});
-	});
+	})
+
+	// database.ref("/games/"+ result.data).on("value", function(dataSnapshot){
+	// 	console.log("pasikeite");
+	// });
 
 	createCanvas(boardSize, boardSize);
 	game = new ChessGame(player, boardSize, 0, 0, true);
