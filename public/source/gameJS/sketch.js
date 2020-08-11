@@ -1,4 +1,4 @@
-//fire.functions().useFunctionsEmulator('http://localhost:5001');
+fire.functions().useFunctionsEmulator('http://localhost:5001');
 
 var boardSize = 800;
 var game;
@@ -8,34 +8,47 @@ var player = 1;
 
 var database = fire.database();
 var functions = fire.functions();
+var userId, gameId;
+
+var getUserId = functions.httpsCallable('getUserId');
+var getGameId = functions.httpsCallable('getGameId');
 
 function setup() {
-	var getUserId = functions.httpsCallable('getUserId');
-	var getGameId = functions.httpsCallable('getGameId');
-	var userId, gameId;
 	getUserId({}).then(function(result){
 		userId = result.data;
-		console.log(result.data);
 		getGameId({
 			playerId: userId
-		}).then(function(result2){
-			gameId = result2.data;
-			console.log(result2.data);
+		}).then(function(result){
+			gameId = result.data.gameId;
+			player = result.data.player;
+			createCanvas(boardSize, boardSize);
+			game = new ChessGame(userId, gameId, player, boardSize, 0, 0, false);
+			listen();
 		});
-	})
-
+	});
 	// database.ref("/games/"+ result.data).on("value", function(dataSnapshot){
 	// 	console.log("pasikeite");
 	// });
-
-	createCanvas(boardSize, boardSize);
-	game = new ChessGame(player, boardSize, 0, 0, true);
-
 }
 
 function mouseClicked() {
 	var sq = getSquare();
-	game.input(sq[0], sq[1]);
+	if(game != null){
+		game.input(sq[0], sq[1]);
+
+	}
+}
+
+listen = function(){
+	database.ref("/games/"+ gameId).on("value", function(dataSnapshot){
+		console.log(dataSnapshot.val());
+		var obj = dataSnapshot.val();
+		if(game != null){
+			game.listenChange(obj.board, obj.turn);
+		}
+		
+	});
+	
 }
 
 var getSquare = function(){
@@ -49,6 +62,8 @@ var getSquare = function(){
 
 function draw() {
 	background(255);
-	game.draw();
+	if(game != null){
+		game.draw();
+	}
 }
 

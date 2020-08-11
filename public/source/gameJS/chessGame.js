@@ -1,3 +1,7 @@
+var database = fire.database();
+var functions = fire.functions();
+var sendMove = functions.httpsCallable('move');
+
 
 class ChessGame{
     board = [];
@@ -5,16 +9,58 @@ class ChessGame{
     selected = null;
     gameOver = -1;
     turn = 1;
-    constructor(player, size, startX, startY, demo){
+    
+    constructor(userId, gameId, player, size, startX, startY, demo){
+        this.userId = userId;
+        this.gameId = gameId;
         this.player = player;
         this.dem = demo;
-        // //player type 1-white, 2-black
+        this.pMap = new Map();
+        this.createMap();
         this.createBoard();
         this.initBoardFigures();
         this.view = new ChessView(player, size, startX, startY);
         this.logic = new ChessLogic();
         this.updateVisable();
     }
+    createMap = function(){
+        var pieces = ['k','q','r','b','n','p','K','Q','R','B','N','P'];
+        for(var i = 0; i < 12; i++){
+            this.pMap.set(pieces[i], i);
+        }
+    }
+
+    boardToString = function(){
+        var pieces = ['k','q','r','b','n','p','K','Q','R','B','N','P'];
+        var sb = "";
+        for(var row = 0; row < 8; row++){
+            for(var col = 0; col < 8; col++){
+                var p = this.board[row][col].figure;
+                if(p != null){
+                    sb = sb + pieces[p];
+                }
+                else{
+                    sb = sb + "0";
+                }
+            }
+        }
+        return sb;
+    }
+
+    stringToBoard = function(sb){
+        for(var row = 0; row < 8; row++){
+            for(var col = 0; col < 8; col++){
+                var s = sb[col+row*8];
+                if(s == 0){
+                    this.board[row][col].figure = null;
+                }
+                else{
+                    this.board[row][col].figure = this.pMap.get(s);
+                }
+            }
+        }
+    }
+
 
     createBoard = function(){
 		for(var i = 0; i < 8; i++){
@@ -55,7 +101,6 @@ class ChessGame{
     updateVisable = function(){
         this.resetVisable();
         var vis = this.logic.getVisable(this.board, this.player);
-        console.log(vis);
         for(var i = 0; i < vis.length; i++){
             if(this.player == 0){
                 this.board[vis[i][0]][vis[i][1]].blackVisable = true;
@@ -123,13 +168,15 @@ class ChessGame{
         this.board[this.selected[0]][this.selected[1]].figure = null;
         this.board[row][col].figure = fig;
         this.deSelect();
-        this.gameOver = this.logic.gameOver(this.board, this.turn);
         this.turn++;
+        this.gameOver = this.logic.gameOver(this.board, this.turn);
+        
         if(this.dem){
             this.demo();
         }
         this.updateVisable();
-        
+        console.log("here");
+        this.sendBoard();
     }
 
     demo = function(){
@@ -175,25 +222,22 @@ class ChessGame{
         }
         
     }
-    /*
-    inputOpp = function(row, col, rowN, colN){
-        if(!this.checkInput(row, col) && !checkInput(rowN, colN)){
-            return;
-        }
-        else if(this.gameOver != -1 || this.turn % 2 == this.player){
-            return;
-        }
-        if(this.turn % 2 != this.player){
-            if(this.logic.move(this.board, row, col, rowN, colN)){
-                var fig = this.board[row][col].figure;
-                this.board[row][col].figure = null;
-                this.board[rowN][colN].figure = fig;
-                this.gameOver = this.logic.gameOver(this.board, this.turn);
-                this.turn++;
-            }
-        }
+    sendBoard = function(){
+        var br = this.boardToString();
+        sendMove({
+			gameId: this.gameId,
+			userId: this.userId,
+            board: br
+		});
     }
-    */
+
+    listenChange = function(br, turn){
+            this.stringToBoard(br);
+            this.updateVisable();
+            this.gameOver = this.logic.gameOver(this.board, this.turn);
+            this.turn = turn;
+    }
+
     draw = function(){
         this.view.draw(this.movable, this.board);
         
