@@ -58,8 +58,16 @@ exports.move = functions.https.onCall((data, contex) => {
     game = snapshot.val();
     if(game.playerBlack != ''){
       if((game.playerBlack == data.userId && game.turn % 2 == 0) || (game.playerWhite == data.userId && game.turn % 2 == 1)){
-        admin.database().ref('/games/' + data.gameId +'/board').set(data.board);
-        admin.database().ref('/games/' + data.gameId +'/turn').set(game.turn+1);
+        
+        admin.database().ref('/games/' + data.gameId).set({
+          board: data.board,
+          playerBlack: game.playerBlack,
+          playerWhite: game.playerWhite,
+          turn: game.turn +1
+        });
+
+        //admin.database().ref('/games/' + data.gameId +'/board').set(data.board);
+        //admin.database().ref('/games/' + data.gameId +'/turn').set(game.turn+1);
       }
     }
     

@@ -52,7 +52,6 @@ class ChessLogic{
             for(var col = 0; col < 8; col++){
                 if(Figure.getOccupation(board[row][col]) == player){
                     var vm = this.getFigureMoves(board, row, col);
-                    //console.log(vm);
                     for(var i = 0; i < vm.visable.length; i++){
                         visable.push([vm.visable[i][0], vm.visable[i][1]]);
                     }
@@ -82,10 +81,10 @@ class ChessLogic{
         else{
             var player2 = 0;
         }
-        var mov = this.legalMoves(board, player2);
+        var mov = this.legalMoves(board, player);
         var legal;
         for(var i = 0; i < mov.length; i++){
-            if(board[mov[i][0]][mov[i][1]] == 6 * player){
+            if(board[mov[i][0]][mov[i][1]] == 6 * player2){
                 legal = false;
                 return legal;
             }
@@ -128,11 +127,7 @@ class ChessLogic{
         var vm = new VisMov();
         var arr = [];
         var board = this.copyBoard(boardF);
-        console.log(board);
         vm = this.getFigureMoves(board, row, col);
-        //var vis = this.getVisable(boardF, this.player);
-        //var mov = this.legalMoves(board, this.player);
-        console.log(vm);
         for(var i = 0; i < vm.movable.length; i++){
             if(this.checkMove(board, row, col, vm.movable[i][0], vm.movable[i][1])){
                 arr.push([vm.movable[i][0], vm.movable[i][1]]);
@@ -176,10 +171,10 @@ class ChessLogic{
     gameOver = function(boardF, turn){
         var board = this.copyBoard(boardF);
         var existsMoves = this.existsLegalMoves(board, turn);
-        //console.log(existsMoves);
+        console.log(existsMoves);
         if(!existsMoves){
             var inCheck = this.isInCheck(board, (turn % 2));
-            //console.log(inCheck);
+            console.log(inCheck);
             if(inCheck){
                 return (turn % 2);
             }
@@ -189,7 +184,7 @@ class ChessLogic{
             
         }
         var insMat = this.insMat(board);
-        //console.log(insMat);
+        console.log(insMat);
         if(insMat){
             return 3;
         }

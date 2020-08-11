@@ -1,4 +1,4 @@
-fire.functions().useFunctionsEmulator('http://localhost:5001');
+//fire.functions().useFunctionsEmulator('http://localhost:5001');
 
 var boardSize = 800;
 var game;
@@ -26,9 +26,6 @@ function setup() {
 			listen();
 		});
 	});
-	// database.ref("/games/"+ result.data).on("value", function(dataSnapshot){
-	// 	console.log("pasikeite");
-	// });
 }
 
 function mouseClicked() {
@@ -39,9 +36,8 @@ function mouseClicked() {
 	}
 }
 
-listen = function(){
+var listen = function(){
 	database.ref("/games/"+ gameId).on("value", function(dataSnapshot){
-		console.log(dataSnapshot.val());
 		var obj = dataSnapshot.val();
 		if(game != null){
 			game.listenChange(obj.board, obj.turn);

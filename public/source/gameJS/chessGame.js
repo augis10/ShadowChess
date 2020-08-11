@@ -1,3 +1,5 @@
+
+//fire.functions().useFunctionsEmulator('http://localhost:5001');
 var database = fire.database();
 var functions = fire.functions();
 var sendMove = functions.httpsCallable('move');
@@ -168,14 +170,13 @@ class ChessGame{
         this.board[this.selected[0]][this.selected[1]].figure = null;
         this.board[row][col].figure = fig;
         this.deSelect();
-        this.turn++;
-        this.gameOver = this.logic.gameOver(this.board, this.turn);
+        //this.turn++;
+        //this.gameOver = this.logic.gameOver(this.board, this.turn);
         
         if(this.dem){
             this.demo();
         }
-        this.updateVisable();
-        console.log("here");
+        //this.updateVisable();
         this.sendBoard();
     }
 
@@ -203,16 +204,12 @@ class ChessGame{
         }
         if(this.turn % 2 == this.player){
             if(this.selected == null && this.checkFigure(row, col) == this.player){
-                console.log("select1");
                 this.select(row, col);
             }
             else if((!this.inMovable(row, col) && this.checkFigure(row, col) != this.player) || this.isSameFig(row, col)){
-                console.log("deSelect");
                 this.deSelect();
             }
             else if(this.checkFigure(row, col) == this.player && !this.isSameFig(row, col)){
-                console.log(this.checkFigure(row, col), this.isSameFig(row, col));
-                console.log("select2");
                 this.select(row, col);
             }
             else if(this.inMovable(row, col)){
@@ -234,8 +231,9 @@ class ChessGame{
     listenChange = function(br, turn){
             this.stringToBoard(br);
             this.updateVisable();
-            this.gameOver = this.logic.gameOver(this.board, this.turn);
             this.turn = turn;
+            this.gameOver = this.logic.gameOver(this.board, this.turn);
+            console.log("here");
     }
 
     draw = function(){
