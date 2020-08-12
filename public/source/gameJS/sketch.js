@@ -4,7 +4,7 @@ var boardSize = 800;
 var game;
 var boardDiv = boardSize/8;
 var selected;
-var player = 1;
+var player;
 
 var database = fire.database();
 var functions = fire.functions();
@@ -32,7 +32,6 @@ function mouseClicked() {
 	var sq = getSquare();
 	if(game != null){
 		game.input(sq[0], sq[1]);
-
 	}
 }
 
@@ -40,11 +39,9 @@ var listen = function(){
 	database.ref("/games/"+ gameId).on("value", function(dataSnapshot){
 		var obj = dataSnapshot.val();
 		if(game != null){
-			game.listenChange(obj.board, obj.turn);
+			game.updateBoard(obj.board, obj.turn);
 		}
-		
 	});
-	
 }
 
 var getSquare = function(){

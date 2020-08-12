@@ -20,7 +20,7 @@ class ChessGame{
         this.pMap = new Map();
         this.createMap();
         this.createBoard();
-        this.initBoardFigures();
+        //this.initBoardFigures();
         this.view = new ChessView(player, size, startX, startY);
         this.logic = new ChessLogic();
         this.updateVisable();
@@ -75,16 +75,19 @@ class ChessGame{
 		}
     }
 
-    initBoardFigures = function(){
-        var initRow1 = [2,4,3,1,0,3,4,2];
-        var initRow2 = [8,10,9,7,6,9,10,8];
-		for(var i = 0; i < 8; i++){
-			this.board[0][i].figure = initRow1[i];
-			this.board[1][i].figure = 5;
-			this.board[7][i].figure = initRow2[i];
-			this.board[6][i].figure = 11;
+    copyBoard(boardF){
+        var board = [];
+        for(var i = 0; i < 8; i++){
+			board[i] = new Array(8);
 		}
+        for(var row = 0; row < 8; row++){
+            for(var col = 0; col < 8; col++){
+                board[row][col] = boardF[row][col].figure;
+            }
+        }
+        return board;
     }
+
     resetVisable = function(){
         for(var row = 0; row < 8; row++){
             for(var col = 0; col < 8; col++){
@@ -102,7 +105,8 @@ class ChessGame{
 
     updateVisable = function(){
         this.resetVisable();
-        var vis = this.logic.getVisable(this.board, this.player);
+        var boardN = this.copyBoard(this.board);
+        var vis = this.logic.getVisable(boardN, this.player);
         for(var i = 0; i < vis.length; i++){
             if(this.player == 0){
                 this.board[vis[i][0]][vis[i][1]].blackVisable = true;
@@ -154,7 +158,8 @@ class ChessGame{
     select = function(row, col){
         if(this.checkFigure(row, col) == this.player){
             this.selected = [row, col];
-            this.movable = this.logic.select(this.board, row , col);
+            var boardN = this.copyBoard(this.board);
+            this.movable = this.logic.select(boardN, row , col);
             this.movable.push([row,col]);
         }
         
@@ -170,13 +175,11 @@ class ChessGame{
         this.board[this.selected[0]][this.selected[1]].figure = null;
         this.board[row][col].figure = fig;
         this.deSelect();
-        //this.turn++;
-        //this.gameOver = this.logic.gameOver(this.board, this.turn);
-        
+        this.updateVisable();
+        this.turn++;
         if(this.dem){
             this.demo();
         }
-        //this.updateVisable();
         this.sendBoard();
     }
 
@@ -203,22 +206,29 @@ class ChessGame{
             return;
         }
         if(this.turn % 2 == this.player){
-            if(this.selected == null && this.checkFigure(row, col) == this.player){
+            var playerFigure = this.checkFigure(row, col);
+            var inMovable = this.inMovable(row, col);
+            var sameFigure = this.isSameFig(row, col);
+
+            if(this.selected == null && playerFigure == this.player){
+                console.log("select1");
                 this.select(row, col);
             }
-            else if((!this.inMovable(row, col) && this.checkFigure(row, col) != this.player) || this.isSameFig(row, col)){
+            else if((!inMovable && playerFigure != this.player) || sameFigure){
+                console.log("deselect");
                 this.deSelect();
             }
-            else if(this.checkFigure(row, col) == this.player && !this.isSameFig(row, col)){
+            else if(playerFigure == this.player && !sameFigure){
+                console.log("select2");
                 this.select(row, col);
             }
-            else if(this.inMovable(row, col)){
+            else if(inMovable){
                 console.log("move");
                 this.move(row, col); 
             }
-        }
-        
+        } 
     }
+
     sendBoard = function(){
         var br = this.boardToString();
         sendMove({
@@ -228,16 +238,16 @@ class ChessGame{
 		});
     }
 
-    listenChange = function(br, turn){
-            this.stringToBoard(br);
-            this.updateVisable();
-            this.turn = turn;
-            this.gameOver = this.logic.gameOver(this.board, this.turn);
-            console.log("here");
+    updateBoard = function(br, turn){
+        this.stringToBoard(br);
+        this.updateVisable();
+        this.turn = turn;
+        var boardN = this.copyBoard(this.board);
+        this.gameOver = this.logic.gameOver(boardN, this.turn);
+        console.log("here");
     }
 
     draw = function(){
         this.view.draw(this.movable, this.board);
-        
     }
 }
