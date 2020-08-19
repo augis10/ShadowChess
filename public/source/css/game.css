@@ -1,0 +1,27 @@
+.cont{
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+  }
+  .cont-canvas{
+    align-content: center;
+    background-color: rgb(85, 74, 67);
+    padding: 20px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .ctr{
+    float: left;
+  }
+  .button{
+    size: 60;
+    color: white;
+    padding: 20px;
+    margin-right: 10px;
+    border: rgb(116, 73, 9);
+    background-color: rgb(173, 87, 16);
+    text-align: center;
+    display: block;
+    border-block-end-width: 5px;
+    
+  }

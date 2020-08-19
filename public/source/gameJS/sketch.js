@@ -13,6 +13,7 @@ var userId, gameId;
 var getUserId = functions.httpsCallable('getUserId');
 var getGameId = functions.httpsCallable('getGameId');
 
+
 function setup() {
 	getUserId({}).then(function(result){
 		userId = result.data;
@@ -21,7 +22,8 @@ function setup() {
 		}).then(function(result){
 			gameId = result.data.gameId;
 			player = result.data.player;
-			createCanvas(boardSize, boardSize);
+			var myCanvas = createCanvas(boardSize, boardSize);
+			myCanvas.parent("game");
 			game = new ChessGame(userId, gameId, player, boardSize, 0, 0, false);
 			listen();
 		});
@@ -59,4 +61,3 @@ function draw() {
 		game.draw();
 	}
 }
-

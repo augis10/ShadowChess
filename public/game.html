@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+  <script src="https://www.gstatic.com/firebasejs/7.17.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.17.1/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.17.1/firebase-functions.js"></script>
+  <meta name="viewport" width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0,charset="UTF-8">
+  <style>
+    body {
+      padding: 0;
+      margin: 0;
+    }
+  </style>
+  <link rel="stylesheet" type="text/css" href="/source/css/game.css">
+</head>
+
+<body>
+  <div class="cont">
+    <div id="game" class="ctr cont-canvas"></div>
+    <div class="ctr">
+      <button class="button ctr">Resign</button>
+      <button class="button ctr">Draw?</button>
+      <button class="button ctr">Back</button>
+    </div>
+  </div>
+
+  <script type="text/javascript" , src="/source/js/firebase.init.js"></script>
+  <script type="text/javascript" , src="/libraries/p5.js"></script>
+  <script type="text/javascript" , src="/source/gameJS/miscObj.js"></script>
+  <script type="text/javascript" , src="/source/gameJS/chessFigures.js"></script>
+  <script type="text/javascript" , src="/source/gameJS/chessView.js"></script>
+  <script type="text/javascript" , src="/source/gameJS/chessLogic.js"></script>
+  <script type="text/javascript" , src="/source/gameJS/chessGame.js"></script>
+  <script type="text/javascript" , src="/source/gameJS/sketch.js"></script>
+</body>
+
+</html>
