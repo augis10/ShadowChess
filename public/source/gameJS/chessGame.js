@@ -11,6 +11,7 @@ class ChessGame{
     selected = null;
     gameOver = -1;
     turn = 1;
+    state = "none"
     
     constructor(userId, gameId, player, size, startX, startY, demo){
         this.userId = userId;
@@ -177,6 +178,8 @@ class ChessGame{
         this.deSelect();
         this.updateVisable();
         this.turn++;
+        var boardN = this.copyBoard(this.board);
+        this.gameOver = this.logic.gameOver(boardN, this.turn);
         if(this.dem){
             this.demo();
         }
@@ -194,6 +197,17 @@ class ChessGame{
         }
     }
 
+    getState = function(){
+        var state = "playing";
+        if(this.gameOver == 0 ){
+            state = "White Won";
+        }
+        else if(this.gameOver == 1){
+            state = "Black Won";
+        }
+        return state;
+    }
+
     input = function(row, col){
         if(!this.checkInput(row, col)){
             return;
@@ -205,7 +219,7 @@ class ChessGame{
         if(this.gameOver != -1 || this.turn % 2 != this.player){
             return;
         }
-        if(this.turn % 2 == this.player){
+        if(this.turn % 2 == this.player && this.state.includes("playing")){
             var playerFigure = this.checkFigure(row, col);
             var inMovable = this.inMovable(row, col);
             var sameFigure = this.isSameFig(row, col);
@@ -231,23 +245,29 @@ class ChessGame{
 
     sendBoard = function(){
         var br = this.boardToString();
+        var state = this.getState();
+        
         sendMove({
 			gameId: this.gameId,
 			userId: this.userId,
-            board: br
+            board: br,
+            state: state
 		});
     }
 
-    updateBoard = function(br, turn){
+    updateBoard = function(br, turn, state){
         this.stringToBoard(br);
         this.updateVisable();
         this.turn = turn;
+        this.state = state;
         var boardN = this.copyBoard(this.board);
         this.gameOver = this.logic.gameOver(boardN, this.turn);
-        console.log("here");
+        console.log(this.gameOver);
     }
 
     draw = function(){
         this.view.draw(this.movable, this.board);
     }
+
+    
 }

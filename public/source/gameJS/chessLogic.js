@@ -69,10 +69,10 @@ class ChessLogic{
         else{
             var player2 = 0;
         }
-        var mov = this.legalMoves(board, player);
+        var mov = this.legalMoves(board, player2);
         var legal;
         for(var i = 0; i < mov.length; i++){
-            if(board[mov[i][0]][mov[i][1]] == 6 * player2){
+            if(board[mov[i][0]][mov[i][1]] == 6 * player){
                 legal = false;
                 return legal;
             }
@@ -163,7 +163,7 @@ class ChessLogic{
         if(!existsMoves){
             var inCheck = this.isInCheck(board, (turn % 2));
             console.log(inCheck);
-            if(inCheck){
+            if(!inCheck){
                 return (turn % 2);
             }
             else {
@@ -176,7 +176,7 @@ class ChessLogic{
         if(insMat){
             return 3;
         }
-
+        
         return -1;
     }
 }

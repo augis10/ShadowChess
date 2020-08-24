@@ -12,6 +12,9 @@ var userId, gameId;
 
 var getUserId = functions.httpsCallable('getUserId');
 var getGameId = functions.httpsCallable('getGameId');
+var resignGame = functions.httpsCallable('resign');
+var drawGame = functions.httpsCallable('draw');
+
 
 
 function setup() {
@@ -40,8 +43,13 @@ function mouseClicked() {
 var listen = function(){
 	database.ref("/games/"+ gameId).on("value", function(dataSnapshot){
 		var obj = dataSnapshot.val();
-		if(game != null){
-			game.updateBoard(obj.board, obj.turn);
+		if(game != null && obj.state =="playing"){
+			game.updateBoard(obj.board, obj.turn, obj.state);
+			document.getElementById("bt2").disabled = false;
+			
+		}
+		else if(game != null && !obj.state.includes("playing")){
+			game.updateBoard(obj.board, obj.turn, obj.state);
 		}
 	});
 }
@@ -60,4 +68,20 @@ function draw() {
 	if(game != null){
 		game.draw();
 	}
+}
+
+var resign = function(){
+	console.log("resign");
+	resignGame({
+		gameId: gameId,
+		playerId: userId
+	});
+}
+
+var drawG = function(){
+	console.log("draw");
+	drawGame({
+		gameId: gameId,
+		playerId: userId
+	});
 }

@@ -20,7 +20,14 @@ exports.getGameId = functions.https.onCall((data, context) => {
         console.log("old");
         key = childSnapshot.key;
         console.log(key);
-        admin.database().ref('/games/' + key +'/playerBlack').set(data.playerId);
+        //admin.database().ref('/games/' + key +'/playerBlack').set(data.playerId);
+        admin.database().ref('/games/' +key).set({
+          board: childData.board,
+          playerBlack: data.playerId,
+          playerWhite: childData.playerWhite,
+          turn: childData.turn,
+          state: "playing"
+        });
         color = 0;
         return true;
       }
@@ -30,7 +37,8 @@ exports.getGameId = functions.https.onCall((data, context) => {
         playerWhite: data.playerId,
         playerBlack: '',
         board:'rnbqkbnrpppppppp00000000000000000000000000000000PPPPPPPPRNBQKBNR',
-        turn: 1
+        turn: 1,
+        state: "none"
       });
       key = gameId.key;
       console.log(key);
@@ -56,21 +64,76 @@ exports.getUserId = functions.https.onCall((data, context) => {
 exports.move = functions.https.onCall((data, contex) => {
   admin.database().ref('/games/' + data.gameId).once('value').then(function (snapshot) {
     game = snapshot.val();
-    if(game.playerBlack != ''){
+    if(game.playerBlack != '' || !game.state.includes("playing")){
       if((game.playerBlack == data.userId && game.turn % 2 == 0) || (game.playerWhite == data.userId && game.turn % 2 == 1)){
         
         admin.database().ref('/games/' + data.gameId).set({
           board: data.board,
           playerBlack: game.playerBlack,
           playerWhite: game.playerWhite,
-          turn: game.turn +1
+          turn: game.turn +1,
+          state: data.state
         });
-
-        //admin.database().ref('/games/' + data.gameId +'/board').set(data.board);
-        //admin.database().ref('/games/' + data.gameId +'/turn').set(game.turn+1);
       }
     }
-    
   });
 });
+
+exports.resign = functions.https.onCall((data, context) => {
+  admin.database().ref('/games/' + data.gameId).once('value').then(function (snapshot) {
+    game = snapshot.val();
+    var oldState = game.state;
+    var newState = oldState;
+    if(oldState.includes("playing")){
+      if(game.playerWhite == data.playerId){
+        newState = "black won";
+      }
+      if(game.playerBlack == data.playerId){
+        newState = "white won";
+      }
+      if(newState != oldState){
+        admin.database().ref('/games/' + data.gameId).set({
+          board: game.board,
+          playerBlack: game.playerBlack,
+          playerWhite: game.playerWhite,
+          turn: game.turn,
+          state: newState
+        });
+      }
+    }
+  });
+});
+
+exports.draw = functions.https.onCall((data, context) => {
+  admin.database().ref('/games/' + data.gameId).once('value').then(function (snapshot) {
+    game = snapshot.val();
+    var oldState = game.state;
+    var newState = oldState;
+    if(oldState == "playing"){
+      if(game.playerWhite == data.playerId){
+        newState = "playing white draw?";
+      }
+      if(game.playerBlack == data.playerId){
+        newState = "playing black draw?";
+      }
+    }
+    if(oldState == "playing white draw?" && game.playerBlack == data.playerId){
+      newState = "draw";
+    }
+    if(oldState == "playing black draw?" && game.playerWhite == data.playerId){
+      newState = "draw";
+    }
+    if(newState != oldState){
+      admin.database().ref('/games/' + data.gameId).set({
+        board: game.board,
+        playerBlack: game.playerBlack,
+        playerWhite: game.playerWhite,
+        turn: game.turn,
+        state: newState
+      });
+    }
+  });
+});
+
+
 
