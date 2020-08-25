@@ -26,6 +26,11 @@ class ChessGame{
         this.logic = new ChessLogic();
         this.updateVisable();
     }
+
+    resize = function(boardSize){
+        this.view.resize(boardSize);
+    }
+
     createMap = function(){
         var pieces = ['k','q','r','b','n','p','K','Q','R','B','N','P'];
         for(var i = 0; i < 12; i++){

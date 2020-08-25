@@ -1,7 +1,13 @@
 .cont{
+    align-content: center;
     margin-left: auto;
     margin-right: auto;
-    width: 50%;
+    display: grid;
+  }
+  .cont2{
+    margin-left: auto;
+    margin-right: auto;
+    display: inline;
   }
   .cont-canvas{
     align-content: center;
@@ -9,6 +15,7 @@
     padding: 20px;
     margin-left: auto;
     margin-right: auto;
+    display: grid;
   }
   .ctr{
     float: left;
@@ -21,7 +28,7 @@
     border: rgb(116, 73, 9);
     background-color: rgb(173, 87, 16);
     text-align: center;
-    display: block;
+    display: grid;
     border-block-end-width: 5px;
     
   }

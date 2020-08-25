@@ -1,5 +1,5 @@
 //fire.functions().useFunctionsEmulator('http://localhost:5001');
-
+var boardSizeD = 800;
 var boardSize = 800;
 var game;
 var boardDiv = boardSize/8;
@@ -32,6 +32,34 @@ function setup() {
 		});
 	});
 }
+getBoardSize = function(){
+	var size = 0;
+	var width = windowWidth*0.8;
+	var height = windowHeight*0.8;
+	if(width >= height){
+		size = height;
+	}
+	else{
+		size = width;
+	}
+	if(size >= boardSizeD){
+		size = boardSizeD;
+	}
+	if(size <= boardSizeD/2){
+		size = boardSizeD/2;
+	}
+	return size;
+}
+
+function windowResized(){
+	if(game != null){
+		
+		boardSize = getBoardSize();
+		console.log(boardSize);
+		resizeCanvas(boardSize, boardSize);
+		game.resize(boardSize);
+	}
+}
 
 function mouseClicked() {
 	var sq = getSquare();
@@ -46,7 +74,6 @@ var listen = function(){
 		if(game != null && obj.state =="playing"){
 			game.updateBoard(obj.board, obj.turn, obj.state);
 			document.getElementById("bt2").disabled = false;
-			
 		}
 		else if(game != null && !obj.state.includes("playing")){
 			game.updateBoard(obj.board, obj.turn, obj.state);
