@@ -32,22 +32,10 @@ class ChessLogic{
                 return Pawn.pawnCtr(board, row, col);
         }
     }
-    copyBoard(boardF){
-        var board = [];
-        for(var i = 0; i < 8; i++){
-			board[i] = new Array(8);
-		}
-        for(var row = 0; row < 8; row++){
-            for(var col = 0; col < 8; col++){
-                board[row][col] = boardF[row][col].figure;
-            }
-        }
-        return board;
-    }
 
-    getVisable = function(boardF, player){
+    getVisable = function(board, player){
         var visable = [];
-        var board = this.copyBoard(boardF);
+        //var board = this.copyBoard(boardF);
         for(var row = 0; row < 8; row++){
             for(var col = 0; col < 8; col++){
                 if(Figure.getOccupation(board[row][col]) == player){
@@ -81,10 +69,10 @@ class ChessLogic{
         else{
             var player2 = 0;
         }
-        var mov = this.legalMoves(board, player);
+        var mov = this.legalMoves(board, player2);
         var legal;
         for(var i = 0; i < mov.length; i++){
-            if(board[mov[i][0]][mov[i][1]] == 6 * player2){
+            if(board[mov[i][0]][mov[i][1]] == 6 * player){
                 legal = false;
                 return legal;
             }
@@ -123,10 +111,10 @@ class ChessLogic{
     }
     
 
-    select = function(boardF, row, col){
+    select = function(board, row, col){
         var vm = new VisMov();
         var arr = [];
-        var board = this.copyBoard(boardF);
+        //var board = this.copyBoard(boardF);
         vm = this.getFigureMoves(board, row, col);
         for(var i = 0; i < vm.movable.length; i++){
             if(this.checkMove(board, row, col, vm.movable[i][0], vm.movable[i][1])){
@@ -136,8 +124,8 @@ class ChessLogic{
         return arr;
     }
 
-    move = function(boardF, row, col, rowN, colN){
-        var board = this.copyBoard(boardF);
+    move = function(board, row, col, rowN, colN){
+        //var board = this.copyBoard(boardF);
         return this.checkMove(board, row, col, rowN, colN);
     }
 
@@ -168,14 +156,14 @@ class ChessLogic{
         }
     }
     
-    gameOver = function(boardF, turn){
-        var board = this.copyBoard(boardF);
+    gameOver = function(board, turn){
+        //var board = this.copyBoard(boardF);
         var existsMoves = this.existsLegalMoves(board, turn);
         console.log(existsMoves);
         if(!existsMoves){
             var inCheck = this.isInCheck(board, (turn % 2));
             console.log(inCheck);
-            if(inCheck){
+            if(!inCheck){
                 return (turn % 2);
             }
             else {
@@ -188,7 +176,7 @@ class ChessLogic{
         if(insMat){
             return 3;
         }
-
+        
         return -1;
     }
 }

@@ -8,16 +8,31 @@
 
     <meta name="viewport" width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0,charset="UTF-8">
     <style> body {padding: 0; margin: 0;} </style>
-    
+    <link rel="stylesheet" type="text/css" href="/source/css/index.css">
   </head>
   <body>
+    <div class="back">
+      <h1 class="hh">SHADOW CHESS</h1>
+      <div>
+        <div class="pict">
+          <img src="/sprites/game1.png" width=100%>
+        </div>
+        <div class="pict">
+          <img src="/sprites/game2.png" width=100%>
+        </div>
+      </div>
+
+      <form action="/game.html">
+        <input type="submit" value="PLAY" class="hh"/>
+      </form>
+      <h2>
+        Rules:
+      </h2>
+      <ul>  
+        <li>All chess rules apply except "Castle" and "En passant."</li>
+        <li>You can only see the squares that your pieces occupy or can move to.</li>  
+      </ul>  
+    </div>
     <script type="text/javascript", src="/source/js/firebase.init.js"></script>
-    <script type="text/javascript", src="/libraries/p5.js"></script>
-    <script type="text/javascript", src="/source/gameJS/miscObj.js"></script>
-    <script type="text/javascript", src="/source/gameJS/chessFigures.js"></script>
-    <script type="text/javascript", src="/source/gameJS/chessView.js"></script>
-    <script type="text/javascript", src="/source/gameJS/chessLogic.js"></script>
-	  <script type="text/javascript", src="/source/gameJS/chessGame.js"></script>
-	  <script type="text/javascript", src="/source/gameJS/sketch.js"></script>
   </body>
 </html>

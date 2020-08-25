@@ -1,10 +1,10 @@
 //fire.functions().useFunctionsEmulator('http://localhost:5001');
-
+var boardSizeD = 800;
 var boardSize = 800;
 var game;
 var boardDiv = boardSize/8;
 var selected;
-var player = 1;
+var player;
 
 var database = fire.database();
 var functions = fire.functions();
@@ -12,6 +12,10 @@ var userId, gameId;
 
 var getUserId = functions.httpsCallable('getUserId');
 var getGameId = functions.httpsCallable('getGameId');
+var resignGame = functions.httpsCallable('resign');
+var drawGame = functions.httpsCallable('draw');
+
+
 
 function setup() {
 	getUserId({}).then(function(result){
@@ -21,30 +25,60 @@ function setup() {
 		}).then(function(result){
 			gameId = result.data.gameId;
 			player = result.data.player;
-			createCanvas(boardSize, boardSize);
+			var myCanvas = createCanvas(boardSize, boardSize);
+			myCanvas.parent("game");
 			game = new ChessGame(userId, gameId, player, boardSize, 0, 0, false);
 			listen();
 		});
 	});
+}
+getBoardSize = function(){
+	var size = 0;
+	var width = windowWidth*0.8;
+	var height = windowHeight*0.8;
+	if(width >= height){
+		size = height;
+	}
+	else{
+		size = width;
+	}
+	if(size >= boardSizeD){
+		size = boardSizeD;
+	}
+	if(size <= boardSizeD/2){
+		size = boardSizeD/2;
+	}
+	return size;
+}
+
+function windowResized(){
+	if(game != null){
+		
+		boardSize = getBoardSize();
+		console.log(boardSize);
+		resizeCanvas(boardSize, boardSize);
+		game.resize(boardSize);
+	}
 }
 
 function mouseClicked() {
 	var sq = getSquare();
 	if(game != null){
 		game.input(sq[0], sq[1]);
-
 	}
 }
 
 var listen = function(){
 	database.ref("/games/"+ gameId).on("value", function(dataSnapshot){
 		var obj = dataSnapshot.val();
-		if(game != null){
-			game.listenChange(obj.board, obj.turn);
+		if(game != null && obj.state =="playing"){
+			game.updateBoard(obj.board, obj.turn, obj.state);
+			document.getElementById("bt2").disabled = false;
 		}
-		
+		else if(game != null && !obj.state.includes("playing")){
+			game.updateBoard(obj.board, obj.turn, obj.state);
+		}
 	});
-	
 }
 
 var getSquare = function(){
@@ -63,3 +97,18 @@ function draw() {
 	}
 }
 
+var resign = function(){
+	console.log("resign");
+	resignGame({
+		gameId: gameId,
+		playerId: userId
+	});
+}
+
+var drawG = function(){
+	console.log("draw");
+	drawGame({
+		gameId: gameId,
+		playerId: userId
+	});
+}

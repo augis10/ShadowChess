@@ -24,6 +24,9 @@ if(window.location.hostname === 'localhost'){
 }
 
   var fire = firebase.initializeApp(firebaseConfig);
-  fire.functions().useFunctionsEmulator('http://localhost:5001');
+  if(window.location.hostname === 'localhost'){
+    fire.functions().useFunctionsEmulator('http://localhost:5001');
+  }
+  
 
   //FIREBASE_DATABASE_EMULATOR_HOST="localhost:9000";

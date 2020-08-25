@@ -18,6 +18,11 @@ class ChessView{
 		}
     }
 
+    resize = function(boardSize){
+        this.boardSize = boardSize;
+        this.sqSize = boardSize/8;
+    }
+
     drawBoard = function(){
         for(var col = 0; col < 8; col++){
             for(var row = 0; row < 8; row++){
