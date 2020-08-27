@@ -11,7 +11,7 @@ class ChessGame{
     selected = null;
     gameOver = -1;
     turn = 1;
-    state = "none"
+    state = "none";
     
     constructor(userId, gameId, player, size, startX, startY, demo){
         this.userId = userId;
@@ -21,7 +21,6 @@ class ChessGame{
         this.pMap = new Map();
         this.createMap();
         this.createBoard();
-        //this.initBoardFigures();
         this.view = new ChessView(player, size, startX, startY);
         this.logic = new ChessLogic();
         this.updateVisable();

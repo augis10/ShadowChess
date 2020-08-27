@@ -18,8 +18,10 @@ var drawGame = functions.httpsCallable('draw');
 
 
 function setup() {
-	getUserId({}).then(function(result){
-		userId = result.data;
+	var userId = getCookie("userId");
+	
+	if(userId != ""){
+		console.log(userId);
 		getGameId({
 			playerId: userId
 		}).then(function(result){
@@ -30,7 +32,11 @@ function setup() {
 			game = new ChessGame(userId, gameId, player, boardSize, 0, 0, false);
 			listen();
 		});
-	});
+	}
+	else {
+		console.log("ref");
+		window.location.href = "/index.html";
+	}
 }
 getBoardSize = function(){
 	var size = 0;

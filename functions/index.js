@@ -55,11 +55,28 @@ exports.getGameId = functions.https.onCall((data, context) => {
 });
 
 exports.getUserId = functions.https.onCall((data, context) => {
+  var username;
+  if(data.username == "" || data.username == null){
+    username = "player";
+  }
+  else {
+    username = data.username;
+  }
   var userId = admin.database().ref("/users").push({
-    name:'player'
+    username: username
   });
   return userId.key;
 });
+
+exports.setUsername = functions.https.onCall((data, context) => {
+  if(data.userId != null || data.username != null){
+    var userId = admin.database().ref("/users/" + data.userId).set({
+      username: data.username
+    });
+  }
+});
+
+
 
 exports.move = functions.https.onCall((data, contex) => {
   admin.database().ref('/games/' + data.gameId).once('value').then(function (snapshot) {

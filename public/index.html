@@ -6,6 +6,9 @@
     <script src="https://www.gstatic.com/firebasejs/7.17.1/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.17.1/firebase-functions.js"></script>
 
+    <script type="text/javascript", src="/source/js/firebase.init.js"></script>
+    <script type="text/javascript" , src="/source/js/index.js"></script>
+
     <meta name="viewport" width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0,charset="UTF-8">
     <style> body {padding: 0; margin: 0;} </style>
     <link rel="stylesheet" type="text/css" href="/source/css/index.css">
@@ -22,8 +25,15 @@
         </div>
       </div>
 
+      <form onsubmit="setUser()">
+        <label>Set Name:</label>
+        <input type="text" id="usernameBox" value="">
+        <input type="submit" id="setUsername" value="Set">
+      </form>
+      <button onclick="setUser()">Set</button>
+      
       <form action="/game.html">
-        <input type="submit" value="PLAY" class="hh"/>
+        <input id="startGame" type="submit" value="PLAY" class="hh"/>
       </form>
       <h2>
         Rules:
@@ -33,6 +43,6 @@
         <li>You can only see the squares that your pieces occupy or can move to.</li>  
       </ul>  
     </div>
-    <script type="text/javascript", src="/source/js/firebase.init.js"></script>
+
   </body>
 </html>
