@@ -17,8 +17,9 @@ var drawGame = functions.httpsCallable('draw');
 
 
 
+
 function setup() {
-	var userId = getCookie("userId");
+	userId = getCookie("userId");
 	
 	if(userId != ""){
 		console.log(userId);
@@ -27,6 +28,7 @@ function setup() {
 		}).then(function(result){
 			gameId = result.data.gameId;
 			player = result.data.player;
+			console.log(gameId);
 			var myCanvas = createCanvas(boardSize, boardSize);
 			myCanvas.parent("game");
 			game = new ChessGame(userId, gameId, player, boardSize, 0, 0, false);

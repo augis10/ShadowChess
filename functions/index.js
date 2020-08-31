@@ -7,51 +7,126 @@ admin.initializeApp(functions.config().firebase);
 // https://firebase.google.com/docs/functions/write-firebase-functions
 
 
-exports.getGameId = functions.https.onCall((data, context) => {
-  //functions.logger.info("Hello logs!", {structuredData: true});
-  
+var defaultBoard = 'rnbqkbnrpppppppp00000000000000000000000000000000PPPPPPPPRNBQKBNR';
+
+setToDatabaseGame = function(ref, board, playerBlack, playerWhite, turn, state){
+  admin.database().ref(ref).set({
+    board: board,
+    playerBlack: playerBlack,
+    playerWhite: playerWhite,
+    turn: turn,
+    state: state
+  });
+}
+
+pushToDatabaseGame = function(ref, board, playerBlack, playerWhite, turn, state){
+  var gameId = admin.database().ref(ref).push({
+    board: board,
+    playerBlack: playerBlack,
+    playerWhite: playerWhite,
+    turn: turn,
+    state: state
+  });
+  return gameId;
+}
+
+setToDatabaseUser = function(ref, username, currentGame){
+  admin.database().ref(ref).set({
+    username: username,
+    currentGame: currentGame
+  });
+}
+
+pushToDatabaseUser = function(ref, username, currentGame){
+  var userId = admin.database().ref(ref).push({
+    username: username,
+    currentGame: currentGame
+  });
+  return userId;
+}
+
+getRandomGame = function(data){
   var game = admin.database().ref('/games').once('value').then(function (snapshot) {
     var key;
     var color;
     var isGame = snapshot.forEach(function (childSnapshot) {
-      //var key = childSnapshot.key;
       var childData = childSnapshot.val();
       if (childData.playerBlack == '') {
-        console.log("old");
         key = childSnapshot.key;
-        console.log(key);
-        //admin.database().ref('/games/' + key +'/playerBlack').set(data.playerId);
-        admin.database().ref('/games/' +key).set({
-          board: childData.board,
-          playerBlack: data.playerId,
-          playerWhite: childData.playerWhite,
-          turn: childData.turn,
-          state: "playing"
-        });
+        var ref = '/games/' + key;
+        var state = "playing";
+        setToDatabaseGame(ref, childData.board, data.playerId, childData.playerWhite, childData.turn, state);
+        ref = "/users/" + data.playerId + "/currentGame";
+        admin.database().ref(ref).set(key);
         color = 0;
         return true;
       }
     });
+
     if (!isGame) {
-      var gameId = admin.database().ref("/games").push({
-        playerWhite: data.playerId,
-        playerBlack: '',
-        board:'rnbqkbnrpppppppp00000000000000000000000000000000PPPPPPPPRNBQKBNR',
-        turn: 1,
-        state: "none"
-      });
+      var ref = "/games";
+      var state = "none";
+      var gameId = pushToDatabaseGame(ref,defaultBoard, '' , data.playerId,  1, state);
       key = gameId.key;
-      console.log(key);
+      ref = "/users/" + data.playerId + "/currentGame";
+      admin.database().ref(ref).set(key);
       color = 1;
-      //key = gameId.key;
     }
     return {
       gameId: key,
       player: color
     }; 
   });
-  console.log(game);
   return game;
+}
+
+getCurrentGameId = function(playerId){
+  var game = admin.database().ref("/users/"+ playerId).once("value").then(function (snapshot){
+    var user = snapshot.val();
+    return user.currentGame;
+  });
+  return game;
+}
+
+getCurrentGame = function(gameId, playerId){
+  var game = admin.database().ref('/games/' + gameId).once('value').then(function (snapshot) {
+    game = snapshot.val();
+
+    var color = -1;
+    if(game.playerBlack == playerId){
+      color = 0;
+    }
+    if(game.playerWhite == playerId){
+      color =1;
+    }
+    return {
+      gameId: gameId,
+      player: color
+    };
+  });
+  return game;
+}
+
+exports.getGameId = functions.https.onCall((data, context) => {
+  //var gameId = getCurrentGameId(data.playerId);
+  var gameF = admin.database().ref("/users/"+ data.playerId).once("value").then(function (snapshot){
+    var user = snapshot.val();
+    var gameId = user.currentGame;
+    console.log(gameId)
+    var game;
+    console.log("1");
+    var game;
+    if(gameId == ''){
+      console.log("3");
+      game = getRandomGame(data);
+    }
+    else {
+      console.log("2");
+      game = getCurrentGame(gameId, data.playerId);
+    }
+    return game;
+  });
+  return gameF;
 });
 
 exports.getUserId = functions.https.onCall((data, context) => {
@@ -62,17 +137,15 @@ exports.getUserId = functions.https.onCall((data, context) => {
   else {
     username = data.username;
   }
-  var userId = admin.database().ref("/users").push({
-    username: username
-  });
+  var ref = "/users";
+  var userId = pushToDatabaseUser(ref, username, "");
   return userId.key;
 });
 
 exports.setUsername = functions.https.onCall((data, context) => {
   if(data.userId != null || data.username != null){
-    var userId = admin.database().ref("/users/" + data.userId).set({
-      username: data.username
-    });
+    var ref = "/users/" + data.userId;
+    setToDatabaseUser(ref, data.username, '');
   }
 });
 
@@ -83,14 +156,8 @@ exports.move = functions.https.onCall((data, contex) => {
     game = snapshot.val();
     if(game.playerBlack != '' || !game.state.includes("playing")){
       if((game.playerBlack == data.userId && game.turn % 2 == 0) || (game.playerWhite == data.userId && game.turn % 2 == 1)){
-        
-        admin.database().ref('/games/' + data.gameId).set({
-          board: data.board,
-          playerBlack: game.playerBlack,
-          playerWhite: game.playerWhite,
-          turn: game.turn +1,
-          state: data.state
-        });
+        var ref = '/games/' + data.gameId;
+        setToDatabaseGame(ref, data.board, game.playerBlack, game.playerWhite, game.turn+1, data.state);
       }
     }
   });
@@ -109,13 +176,8 @@ exports.resign = functions.https.onCall((data, context) => {
         newState = "white won";
       }
       if(newState != oldState){
-        admin.database().ref('/games/' + data.gameId).set({
-          board: game.board,
-          playerBlack: game.playerBlack,
-          playerWhite: game.playerWhite,
-          turn: game.turn,
-          state: newState
-        });
+        var ref = '/games/' + data.gameId;
+        setToDatabaseGame(ref, game.board, game.playerBlack, game.playerWhite, game.turn, newState);
       }
     }
   });
@@ -141,13 +203,8 @@ exports.draw = functions.https.onCall((data, context) => {
       newState = "draw";
     }
     if(newState != oldState){
-      admin.database().ref('/games/' + data.gameId).set({
-        board: game.board,
-        playerBlack: game.playerBlack,
-        playerWhite: game.playerWhite,
-        turn: game.turn,
-        state: newState
-      });
+      var ref = '/games/' + data.gameId;
+      setToDatabaseGame(ref, game.board, game.playerBlack, game.playerWhite, game.turn, newState);
     }
   });
 });
