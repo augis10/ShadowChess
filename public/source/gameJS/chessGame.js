@@ -23,6 +23,7 @@ class ChessGame{
         this.createBoard();
         this.view = new ChessView(player, size, startX, startY);
         this.logic = new ChessLogic();
+        this.clock = new ChessClock(player, 120, 5);
         this.updateVisable();
     }
 
@@ -175,10 +176,21 @@ class ChessGame{
         this.movable = [];
     }
 
+    checkQueening = function(row, col){
+        console.log(this.board[row][col].figure);
+        if(this.board[row][col].figure == 5 && row == 7){
+            this.board[row][col].figure = 1;
+        }
+        if(this.board[row][col].figure == 11 && row == 0){
+            this.board[row][col].figure = 7;
+        }
+    }
+
     move = function(row, col){
         var fig = this.board[this.selected[0]][this.selected[1]].figure;
         this.board[this.selected[0]][this.selected[1]].figure = null;
         this.board[row][col].figure = fig;
+        this.checkQueening(row, col);
         this.deSelect();
         this.updateVisable();
         this.turn++;
@@ -188,6 +200,7 @@ class ChessGame{
             this.demo();
         }
         this.sendBoard();
+        this.clock.press(this.turn);
     }
 
     demo = function(){
@@ -208,6 +221,9 @@ class ChessGame{
         }
         else if(this.gameOver == 1){
             state = "Black Won";
+        }
+        else if(this.gameOver == 3 || this.gameOver == 2){
+            state = "Draw";
         }
         return state;
     }
@@ -267,6 +283,7 @@ class ChessGame{
         var boardN = this.copyBoard(this.board);
         this.gameOver = this.logic.gameOver(boardN, this.turn);
         console.log(this.gameOver);
+        this.clock.press(this.turn);
     }
 
     draw = function(){

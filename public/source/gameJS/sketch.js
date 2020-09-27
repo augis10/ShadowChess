@@ -15,9 +15,6 @@ var getGameId = functions.httpsCallable('getGameId');
 var resignGame = functions.httpsCallable('resign');
 var drawGame = functions.httpsCallable('draw');
 
-
-
-
 function setup() {
 	userId = getCookie("userId");
 	

@@ -135,13 +135,15 @@ class ChessLogic{
         for(var row = 0; row < 8; row++){
             for(var col = 0; col < 8; col++){
                 if(board[row][col] != null){
+                    
                     if((board[row][col] == 4 || board[row][col] == 3)){
                         bPoints += 3;
                     }
                     else if((board[row][col] == 10 || board[row][col] == 9)){
                         wPoints += 3;
                     }
-                    else if(board[row][col] != 0 || board[row][col] != 6){
+                    else if(board[row][col] != 0 && board[row][col] != 6){
+                        console.log("gogo1");
                         return false;
                     }
                 }
@@ -149,6 +151,7 @@ class ChessLogic{
             }
         }
         if(wPoints > 3 || bPoints > 3){
+            console.log("gogo2");
             return false;
         }
         else {

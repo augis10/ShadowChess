@@ -154,11 +154,18 @@ exports.setUsername = functions.https.onCall((data, context) => {
 exports.move = functions.https.onCall((data, contex) => {
   admin.database().ref('/games/' + data.gameId).once('value').then(function (snapshot) {
     game = snapshot.val();
-    if(game.playerBlack != '' || !game.state.includes("playing")){
+    if(game.playerBlack != '' || game.state.includes("playing")){
       if((game.playerBlack == data.userId && game.turn % 2 == 0) || (game.playerWhite == data.userId && game.turn % 2 == 1)){
         var ref = '/games/' + data.gameId;
         setToDatabaseGame(ref, data.board, game.playerBlack, game.playerWhite, game.turn+1, data.state);
       }
+    }
+    if(game.playerBlack != '' && !data.state.includes("playing")){
+      var non = "";
+      var ref = "/users/" + game.playerBlack +"/currentGame";
+      admin.database().ref(ref).set(non);
+      var ref = "/users/" + game.playerWhite +"/currentGame";
+      admin.database().ref(ref).set(non);
     }
   });
 });
