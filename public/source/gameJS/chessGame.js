@@ -4,6 +4,8 @@ var database = fire.database();
 var functions = fire.functions();
 var sendMove = functions.httpsCallable('move');
 
+var myTimer = document.getElementById("myTimer");
+var opTimer = document.getElementById("opTimer");
 
 class ChessGame{
     board = [];
@@ -12,6 +14,9 @@ class ChessGame{
     gameOver = -1;
     turn = 1;
     state = "none";
+
+    defaultTime = 10;
+    defaultInc = 5;
     
     constructor(userId, gameId, player, size, startX, startY, demo){
         this.userId = userId;
@@ -23,9 +28,38 @@ class ChessGame{
         this.createBoard();
         this.view = new ChessView(player, size, startX, startY);
         this.logic = new ChessLogic();
-        this.clock = new ChessClock(player, 120, 5);
+        this.clock = new ChessClock(gameId, player, this.defaultTime, this.defaultInc);
         this.updateVisable();
+        this.EventListener()
     }
+
+    EventListener(){
+        myTimer.addEventListener("timeOver", function(e){
+            this.gameOverByTime(e.detail.player);
+            console.log(e.detail);
+        }.bind(this));
+        opTimer.addEventListener("timeOver", function(e){
+            this.gameOverByTime(e.detail.player);
+            console.log(e.detail);
+        }.bind(this));
+    }
+
+    gameOverByTime(player){
+        if(player == "blackTimer"){
+            this.gameOver = 5;
+        }
+        if(player == "whiteTimer"){
+            this.gameOver = 4;
+        }
+        this.state = this.getState();
+        console.log(this.getState());
+        if(this.state.includes("Time") == true){
+            this.sendBoard();
+        }
+        
+    }
+
+    
 
     resize = function(boardSize){
         this.view.resize(boardSize);
@@ -200,6 +234,7 @@ class ChessGame{
             this.demo();
         }
         this.sendBoard();
+        console.log("move");
         this.clock.press(this.turn);
     }
 
@@ -224,6 +259,12 @@ class ChessGame{
         }
         else if(this.gameOver == 3 || this.gameOver == 2){
             state = "Draw";
+        }
+        else if(this.gameOver == 4){
+            state = "Black Won by Time";
+        }
+        else if(this.gameOver == 5){
+            state = "White Won by Time";
         }
         return state;
     }
@@ -266,7 +307,8 @@ class ChessGame{
     sendBoard = function(){
         var br = this.boardToString();
         var state = this.getState();
-        
+        this.state = state;
+        console.log(state);
         sendMove({
 			gameId: this.gameId,
 			userId: this.userId,
@@ -280,10 +322,17 @@ class ChessGame{
         this.updateVisable();
         this.turn = turn;
         this.state = state;
+        console.log(state);
         var boardN = this.copyBoard(this.board);
+        if(state.includes("Time")){
+            return;
+        }
         this.gameOver = this.logic.gameOver(boardN, this.turn);
         console.log(this.gameOver);
-        this.clock.press(this.turn);
+        if(this.gameOver == -1){
+            this.clock.press(this.turn);
+        }
+        
     }
 
     draw = function(){

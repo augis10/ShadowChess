@@ -45,6 +45,18 @@ pushToDatabaseUser = function(ref, username, currentGame){
   return userId;
 }
 
+setToDatabaseClock = function(ref, blackTimer, whiteTimer, increment){
+  admin.database().ref(ref).set({
+    blackTimer: blackTimer,
+    whiteTimer: whiteTimer,
+    increment: increment
+  });
+}
+
+
+
+
+
 getRandomGame = function(data){
   var game = admin.database().ref('/games').once('value').then(function (snapshot) {
     var key;
@@ -107,6 +119,35 @@ getCurrentGame = function(gameId, playerId){
   return game;
 }
 
+exports.setTimer = functions.https.onCall((data, context) => {
+  var ref = "/clocks/"+ data.gameId + "/"+ data.player;
+  admin.database().ref(ref).set(data.time);
+});
+
+exports.getClock = functions.https.onCall((data, context) => {
+  var ref = "/clocks/"+ data.gameId;
+  var clockInfo = {
+    blackTimer: data.blackTimer,
+    whiteTimer: data.whiteTimer,
+    increment: data.increment
+  };
+  var clock = admin.database().ref(ref).once('value').then(function (snapshot) {
+    snp = snapshot.val();
+    if(snapshot.val() == null){
+      setToDatabaseClock(ref, data.blackTimer, data.whiteTimer, data.increment);
+    }
+    else{
+      clockInfo = {
+        blackTimer: snp.blackTimer,
+        whiteTimer: snp.whiteTimer,
+        increment: snp.increment
+      }
+    }
+    return clockInfo;
+  });
+  return clock;
+});
+
 exports.getGameId = functions.https.onCall((data, context) => {
   //var gameId = getCurrentGameId(data.playerId);
   var gameF = admin.database().ref("/users/"+ data.playerId).once("value").then(function (snapshot){
@@ -157,7 +198,19 @@ exports.move = functions.https.onCall((data, contex) => {
     if(game.playerBlack != '' || game.state.includes("playing")){
       if((game.playerBlack == data.userId && game.turn % 2 == 0) || (game.playerWhite == data.userId && game.turn % 2 == 1)){
         var ref = '/games/' + data.gameId;
-        setToDatabaseGame(ref, data.board, game.playerBlack, game.playerWhite, game.turn+1, data.state);
+        if(data.state.includes("Time") == true){
+          setToDatabaseGame(ref, data.board, game.playerBlack, game.playerWhite, game.turn, data.state);
+          console.log("00000");
+        }
+        else if(data.state.includes("playing") == true){
+          setToDatabaseGame(ref, data.board, game.playerBlack, game.playerWhite, game.turn+1, data.state);
+          console.log(game);
+        }
+        else{
+          setToDatabaseGame(ref, data.board, game.playerBlack, game.playerWhite, game.turn, data.state);
+          console.log("11111");
+        }
+        
       }
     }
     if(game.playerBlack != '' && !data.state.includes("playing")){
