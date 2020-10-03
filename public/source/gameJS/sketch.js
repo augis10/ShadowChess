@@ -1,6 +1,9 @@
+//const { get } = require("http");
+
 //fire.functions().useFunctionsEmulator('http://localhost:5001');
 var boardSizeD = 800;
 var boardSize = 800;
+
 var game;
 var boardDiv = boardSize/8;
 var selected;
@@ -14,6 +17,9 @@ var getUserId = functions.httpsCallable('getUserId');
 var getGameId = functions.httpsCallable('getGameId');
 var resignGame = functions.httpsCallable('resign');
 var drawGame = functions.httpsCallable('draw');
+
+var myUsername = "";
+var opUsername =  "";
 
 function setup() {
 	userId = getCookie("userId");
@@ -56,6 +62,39 @@ getBoardSize = function(){
 	return size;
 }
 
+setUsername = function(userId, elemId, mine){
+	database.ref("/users/"+ userId).once("value", function(dataSnapshot){
+		var user = dataSnapshot.val();
+		if(mine == true){
+			myUsername = user.username;
+		}
+		else{
+			opUsername = user.username;
+		}
+		elemId.textContent = user.username;
+	});
+}
+
+setUserInfo = function(gameInfo){
+	if(game != null){
+		if(myUsername == ""){
+			var elem = document.getElementById("myUsername");
+			setUsername(userId, elem, true);
+		}
+		if(opUsername == "" && gameInfo.playerBlack != "" && gameInfo.playerWhite != ""){
+			var elem = document.getElementById("opUsername");
+			console.log(gameInfo);
+			if(gameInfo.playerBlack == userId){
+				setUsername(gameInfo.playerWhite,  elem, false);
+			}
+			if(gameInfo.playerWhite == userId){
+				setUsername(gameInfo.playerBlack,  elem, false)
+			}
+		}
+	}
+	
+}
+
 function windowResized(){
 	if(game != null){
 		
@@ -63,6 +102,7 @@ function windowResized(){
 		console.log(boardSize);
 		resizeCanvas(boardSize, boardSize);
 		game.resize(boardSize);
+		boardDiv = boardSize/8;
 	}
 }
 
@@ -74,8 +114,10 @@ function mouseClicked() {
 }
 
 var listen = function(){
+	console.log(gameId);
 	database.ref("/games/"+ gameId).on("value", function(dataSnapshot){
 		var obj = dataSnapshot.val();
+		setUserInfo(obj);
 		if(game != null && obj.state =="playing"){
 			game.updateBoard(obj.board, obj.turn, obj.state);
 			document.getElementById("bt2").disabled = false;

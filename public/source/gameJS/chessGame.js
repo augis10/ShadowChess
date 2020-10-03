@@ -6,6 +6,7 @@ var sendMove = functions.httpsCallable('move');
 
 var myTimer = document.getElementById("myTimer");
 var opTimer = document.getElementById("opTimer");
+var gameState = document.getElementById("gameState");
 
 class ChessGame{
     board = [];
@@ -14,9 +15,13 @@ class ChessGame{
     gameOver = -1;
     turn = 1;
     state = "none";
+    myUsername ="";
+    opUsername ="";
 
     defaultTime = 10;
     defaultInc = 5;
+
+    
     
     constructor(userId, gameId, player, size, startX, startY, demo){
         this.userId = userId;
@@ -30,8 +35,20 @@ class ChessGame{
         this.logic = new ChessLogic();
         this.clock = new ChessClock(gameId, player, this.defaultTime, this.defaultInc);
         this.updateVisable();
-        this.EventListener()
+        this.EventListener();
+        this.setGlobalGameState();
     }
+
+    setGlobalGameState(){
+        if(this.state == "none"){
+            gameState.textContent = "Game State: Waiting for other Player...";
+        }
+        else{
+            gameState.textContent = "Game State: " + this.state;
+        }
+    }
+
+    
 
     EventListener(){
         myTimer.addEventListener("timeOver", function(e){
@@ -324,6 +341,7 @@ class ChessGame{
         this.state = state;
         console.log(state);
         var boardN = this.copyBoard(this.board);
+        this.setGlobalGameState();
         if(state.includes("Time")){
             return;
         }

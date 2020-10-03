@@ -1,6 +1,6 @@
 .back{
     width: 50%;
-    background-color: rgb(230, 187, 157);
+    background-color: rgb(192, 190, 188);
     padding: 20px;
     margin-left: auto;
     margin-right: auto;
@@ -8,14 +8,10 @@
   .hh{
       color: white;
       padding: 20px;
-      margin: 0px;
-      size: 60;
-      border: rgb(116, 73, 9);
-      background-color: rgb(173, 87, 16);
+      background-color: rgb(107, 97, 90);
       text-align: center;
       margin-left: auto;
       margin-right: auto;
-      display: block;
 
   }
   .pict {
@@ -24,4 +20,45 @@
     float: left;
     margin-left: auto;
     margin-right: auto;
+    border-radius: 3px;
+    border:  rgb(107, 97, 90);
   }
+
+  .submit-form{
+    font-size: 20px;
+    color: white;
+    background-color: rgb(107, 97, 90);
+  }
+
+  .write-pl{
+    background-color: rgb(153, 144, 137);
+  }
+  .ctr{
+    float: left;
+}
+
+.f-grid{
+  display: grid; 
+  grid: auto / auto auto ; 
+  padding: 10px; 
+  background-color: rgb(153, 144, 137);
+}
+
+.f-label{
+  font-size: 20px;
+  color: white;
+}
+
+.play{
+  color: white;
+  padding: 20px;
+  background-color: rgb(107, 97, 90);
+  margin-top: 2%;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+.cont{
+  text-align: center;
+}

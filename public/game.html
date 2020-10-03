@@ -23,27 +23,54 @@
       margin: 0;
     }
   </style>
-  <link rel="stylesheet" type="text/css" href="/source/css/game.css">
+  <link rel="stylesheet" type="text/css" href="/source/css/game2.css">
 </head>
 
 <body>
-  <div class="cont">
-    <div id="game" class="cont-canvas"></div>
+  
+  
+  <div >
     
-    <div class="ctr cont2">
-      <button onclick="resign(); this.disabled=true;" class="button ctr" id="bt1" >Resign</button>
-      <button onclick="drawG(); this.disabled=true;" class="button ctr " id="bt2" >Draw?</button>
-      <!--<button class="button ctr" id="bt3" >Back</button>-->
-      <form action="index.html" class="ctr">
-        <input type="submit" value="Back" class="button"/>
-      </form>
-    </div>
 
-    <div>
-      <p>opTimer</p><div id="opTimer">00:00</div>
-      <p>myTimer</p><div id="myTimer">00:00</div>
-      
+    <div class="main">
+      <div></div>
+      <div class="top-bottom">
+        <div>
+          <div id="opUsername" class="user-info ctr">username</div>
+          <div id="opTimer" class="user-info ctr">00:00</div>
+          <div id=gameState class="user-info ctr game-state">Game State: Waiting for other Player...</div>
+        </div>
+        
+      </div>
+      <div></div>
+
+      <div class=""></div>
+      <div class="semi-canvas">
+        <div class=""></div>
+        <div id="game" class="cont-canvas"></div>
+        <div class=""></div>
+      </div>
+      <div class=""></div>
+
+      <div></div>
+      <div class="top-bottom">
+        <div id="myUsername" class="user-info ctr">username</div>
+        <div id="myTimer" class="user-info ctr">00:00</div>
+        <button onclick="resign(); this.disabled=true;" class="button ctr" id="bt1" >Resign</button>
+        <button onclick="drawG(); this.disabled=true;" class="button ctr " id="bt2" >Draw?</button>
+        <!--<button class="button ctr" id="bt3" >Back</button>-->
+        <form action="index.html" class="button ctr">
+          <input type="submit" value="Back" class="button"/>
+        </form>
+      </div>
+      <div></div>
+
     </div>
+    
+
+    
+
+    
   </div>
 
   <script type="text/javascript" , src="/source/gameJS/chessClock.js"></script>

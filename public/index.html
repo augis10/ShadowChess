@@ -25,15 +25,17 @@
         </div>
       </div>
 
-      <form onsubmit="setUser()">
-        <label>Set Name:</label>
-        <input type="text" id="usernameBox" value="">
-        <input type="submit" id="setUsername" value="Set">
-      </form>
-      <button onclick="setUser()">Set</button>
+      <div class="f-grid">
+        <form class="" onsubmit="setUser()">
+          <label class="f-label">Set Name:</label>
+          <input class="submit-form write-pl" type="text" id="usernameBox" value="">
+        </form>
+        <button class="submit-form" onclick="setUser()">Set</button>
+      </div>
       
-      <form action="/game.html">
-        <input id="startGame" type="submit" value="PLAY RANDOM" class="hh"/>
+      
+      <form class="cont" action="/game.html">
+        <input id="startGame" type="submit" value="PLAY RANDOM" class="play"/>
       </form>
       <h2>
         Rules:
