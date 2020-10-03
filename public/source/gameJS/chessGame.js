@@ -18,7 +18,7 @@ class ChessGame{
     myUsername ="";
     opUsername ="";
 
-    defaultTime = 10;
+    defaultTime = 180;
     defaultInc = 5;
 
     
